@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "353128007543",
+    "project_id": "rapellemoi-a6de8",
+    "storage_bucket": "rapellemoi-a6de8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353128007543:android:a05300efef7e808a660372",
+        "android_client_info": {
+          "package_name": "co.penseeexprimee.rappellemoi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8I30kjYasqeqGTwpi3gHaDGZIazGQG6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
