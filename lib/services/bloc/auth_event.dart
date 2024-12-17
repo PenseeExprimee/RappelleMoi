@@ -29,3 +29,7 @@ class AuthEventRegistering extends AuthEvent {
 class AuthEventShouldRegister extends AuthEvent {
   const AuthEventShouldRegister();
 }
+
+class AuthEventShouldVerifyEmail extends AuthEvent {
+  const AuthEventShouldVerifyEmail();
+}

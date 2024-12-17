@@ -9,6 +9,7 @@ import 'package:rappellemoi/views/notification_view.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/views/register_view.dart';
+import 'package:rappellemoi/views/verification_email_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized(); //initialisation préalable du moteur flutter
@@ -49,7 +50,11 @@ class HomePage extends StatelessWidget {
           return const NotificationPage();
         } else if (state is AuthStateRegistering){
           return const RegisterView();
-        } else {
+        } 
+        else if (state is AuthStateNeedsEmailVerification){
+          return const VerifEmail();
+        }
+        else {
           return const Scaffold(
             body: CircularProgressIndicator()
           );

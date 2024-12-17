@@ -48,7 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         //Check if the user needs to verify its email
         if(!user.isEmailVerified){
           devtools.log("Inside the login event: The email of the user is not verified");
-          
+          emit(const AuthStateNeedsEmailVerification(isLoading: false)); //the email has already been sent at the creation of the account. The user will be able to re-send the email if he wants to.
         }
         else {
           emit(AuthStateLoggedIn(isLoading: false, user: user));
@@ -74,20 +74,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     });
   
     on <AuthEventShouldRegister>((event, emit) {
-      emit(const AuthStateRegistering(isLoading: false)
-      
-      );
-    },);
+      emit(const AuthStateRegistering(isLoading: false));
+      },
+    );
 
-    on <AuthEventRegistering>((event, emit) {
+    on <AuthEventRegistering>((event, emit) async {
       try {
         devtools.log("Auth event registering triggered");
         final email = event.email;
         final password = event.password;
-        provider.createUser(
+        await provider.createUser(
           email: email,
           password: password
         );
+        //send the verification email
+        await provider.sendEmailVerification();
+
+        //emit the state of email verification
+        emit(const AuthStateNeedsEmailVerification(isLoading: false));
+
       } on InvalidEmailAuthException catch (e) {
         devtools.log("In auth event registering, invalid email $e");
         
@@ -96,6 +101,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       }
     });
   
+    on <AuthEventShouldVerifyEmail>((event, emit) async {
+      try {
+        devtools.log("Re send verification email button triggered");
+        //Actually send the email
+        await provider.sendEmailVerification();
+
+        //send 
+      } on UserNotLoggedInAuthException catch (e) {
+        devtools.log("The verification email could not be used because there is no current user: $e");
+        
+      }
+    },);
   }
 
   

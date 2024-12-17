@@ -67,7 +67,7 @@ class _RegisterViewState extends State<RegisterView> {
                   autocorrect: false,
                   enableSuggestions: false,
                   decoration: const InputDecoration(
-                    hintText: "Enter your username...",
+                    hintText: "Enter your email address...",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),

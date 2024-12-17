@@ -30,3 +30,8 @@ class AuthStateRegistering extends AuthState {
   // ignore: use_super_parameters
   const AuthStateRegistering({required isLoading}) : super(isLoading: isLoading);
 }
+
+class AuthStateNeedsEmailVerification extends AuthState {
+  // ignore: use_super_parameters
+  const AuthStateNeedsEmailVerification({required isLoading}) : super(isLoading: isLoading);
+}
