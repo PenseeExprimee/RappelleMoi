@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rappellemoi/helpers/loading/loading_screen.dart';
 import 'package:rappellemoi/services/auth/auth_firebase_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'package:rappellemoi/views/login_view.dart';
 import 'package:rappellemoi/views/notification_view.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/views/register_view.dart';
 import 'package:rappellemoi/views/verification_email_view.dart';
@@ -35,12 +35,19 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
 
     //to initialize the provider
-    devtools.log("Came here :D");
     context.read<AuthBloc>().add(const AuthEventInitialize());
 
     return BlocConsumer<AuthBloc,AuthState>(
       listener: (context, state){
-        //not implemented yet
+        //responsible of displaying overlays
+        if(state.isLoading){
+          LoadingScreen().show( //call the factory constructor 
+            context: context,
+            text: state.loadingText ?? 'Please wait...'
+          );
+        } else {
+          LoadingScreen().hide();
+        }
       },
       builder: (context,state){
         if(state is AuthStateLoggedOut){

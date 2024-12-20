@@ -23,7 +23,7 @@ class AuthStateLoggedIn extends AuthState{
 
 class AuthStateLoggedOut extends AuthState {
   // ignore: use_super_parameters
-  const AuthStateLoggedOut({required isLoading}):super(isLoading: isLoading);
+  const AuthStateLoggedOut({required isLoading, loadingText}):super(isLoading: isLoading, loadingText: loadingText);
 }
 
 class AuthStateRegistering extends AuthState {

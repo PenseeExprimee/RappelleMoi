@@ -84,12 +84,17 @@ class FirebaseAuthProvider implements AuthProvider {
         throw GenericAuthException();
       }
     } on FirebaseAuthException catch (e) {
+      devtools.log(e.code);
       if(e.code == 'invalid-credential'){
         throw InvalidCredentialsAuthException();
       } else if(e.code == 'invalid-email'){
         throw InvalidEmailAuthException();
       }
+      if(e.code == 'wrong-password'){ //episode 2
+        throw InvalidCredentialsAuthException();
+      }
       else {
+        devtools.log(e.code);
         devtools.log("An other firebase exception occured: $e");
         throw GenericAuthException();
       }

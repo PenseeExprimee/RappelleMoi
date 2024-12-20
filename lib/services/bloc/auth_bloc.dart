@@ -30,12 +30,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     
     on <AuthEventLogin>((event,emit) async{
       devtools.log("Auth event login triggered");
-      //initial state that we emit when the event arrives: we are logged out
+      
+      //initial state that we emit when the event arrives: we are logged out 
       emit(
         const AuthStateLoggedOut(
-          isLoading: true
-        )
+          isLoading: true,
+          loadingText: "Login: please wait..."
+          )
       );
+      await Future.delayed(const Duration(seconds: 1)); //to have time to see the overlay
       //implement the logic to atually login
       // get the user credential from the event
       final email = event.email;
@@ -54,7 +57,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
           emit(AuthStateLoggedIn(isLoading: false, user: user));
         }
 
+      } on InvalidEmailAuthException { //episode 2
+        
+        emit(const AuthStateLoggedOut(isLoading: true, loadingText: "The email is not valid."));
+        await Future.delayed(const Duration(seconds: 5));
+        emit(const AuthStateLoggedOut(isLoading: false));
+
+      } on InvalidCredentialsAuthException {
+
+        emit(const AuthStateLoggedOut(isLoading: true, loadingText: "Invalid credentials."));
+        await Future.delayed(const Duration(seconds: 5));
+        emit(const AuthStateLoggedOut(isLoading: false));
+
       } on Exception catch (e) { //for some reason the login failed
+        
+        emit(AuthStateLoggedOut(isLoading: true, loadingText: "An error occured during the login process: $e"));
+        await Future.delayed(const Duration(seconds: 5));
         emit(const AuthStateLoggedOut(isLoading: false));
         devtools.log("An error occured during the login process: $e");
 
@@ -64,9 +82,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
 
     on <AuthEventLoggedout>((event,emit) async{
       devtools.log("Auth event logged out triggered");
-      emit(const AuthStateLoggedOut(isLoading: true));
+      emit(const AuthStateLoggedOut(
+        isLoading: true, 
+        loadingText: "Logging out..."
+        )
+      );
       try {
         await provider.logout();
+        emit(const AuthStateLoggedOut(
+          isLoading: false
+          )
+        );
+      } on UserNotLoggedInAuthException { //happens when we click on the "pas encore de compte?"
         emit(const AuthStateLoggedOut(isLoading: false));
       } catch (e) {
         devtools.log("Auth event logged out: an error occured during the process: $e");
@@ -79,6 +106,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     );
 
     on <AuthEventRegistering>((event, emit) async {
+      emit(const AuthStateLoggedOut(isLoading: true, loadingText: "Creating your account..."));
       try {
         devtools.log("Auth event registering triggered");
         final email = event.email;
