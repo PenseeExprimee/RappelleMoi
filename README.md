@@ -1,6 +1,7 @@
 # rappellemoi
 
-A new Flutter project.
+A new Flutter project. This project aims at creating an application that will allow the user to create notifications
+so he does not forget tasks he has to accomplish at a set time.
 
 ## Getting Started
 
