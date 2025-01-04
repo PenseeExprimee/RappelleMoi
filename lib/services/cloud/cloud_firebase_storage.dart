@@ -33,7 +33,8 @@ class FirebaseCloudStorage {
       return CloudNote(
         noteId: fetchedNote.id,
         userId: ownerUserId,
-        text: ''
+        text: '',
+        //notificationDate: DateTime.now()
       );
     } catch (e){
       throw CouldNotCreateNote();

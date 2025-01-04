@@ -70,7 +70,7 @@ class _NotesViewState extends State<NotesView> {
             },
           )
         ],
-        title: const Text('Tes notifications'),
+        title: const Text('Ta liste de future notifications'),
       ),
 
       body: StreamBuilder(

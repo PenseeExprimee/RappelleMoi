@@ -15,13 +15,16 @@ class CreateOrUpdateNotesView extends StatefulWidget {
 class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
   CloudNote? _note;
+  DateTime? _date;
   late final TextEditingController _textController;
+  late final TextEditingController _dateTimeController;
   late final FirebaseCloudStorage _notesService;
 
   @override
   void initState() {
     _notesService = FirebaseCloudStorage(); //always the same because we created a singleton
     _textController = TextEditingController();
+    _dateTimeController = TextEditingController();
     super.initState();
   }
 
@@ -81,9 +84,19 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     );
   }
 
+  void _dateTimeControllerListener() async {
+    final currentDate = _date;
+    if(currentDate == null){ //there is no date
+      return;
+    }
+    //TO DO
+  }
   void setupTextControllerListener(){
     _textController.removeListener(_textControllerListener); //remove the function that reacts to text modification
     _textController.addListener(_textControllerListener); //add a function that reacts to text modification
+
+    _dateTimeController.removeListener(_dateTimeControllerListener);
+    _dateTimeController.addListener(_dateTimeControllerListener);
   }
 
   @override
@@ -91,6 +104,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     deleteNoteIfTextIsEmpty();
     saveNoteIfTextNotEmpty();
     _textController.dispose();
+    _dateTimeController.dispose();
     super.dispose();
   }
 
@@ -104,20 +118,55 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
         future: createOrGetExistingNote(context), 
         builder: (context, snapshot){
           switch(snapshot.connectionState){
-
+            
             case ConnectionState.done:
               devtools.log('Setup text editing controller');
               setupTextControllerListener();
-              return TextField(
-                controller: _textController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null, //the text space expands when the user is typing
-                decoration: const InputDecoration(
-                  hintText: 'Enter your note...',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))
+              return  Padding(
+                padding: const EdgeInsetsDirectional.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10,),
+                    const Text("Tu peux ici créer et programmer ta notification. Elle te sera envoyée à la date et l'heure prévue."),
+                    const SizedBox(height: 40,),
+                    const Align(
+                      alignment:Alignment.topLeft,
+                      child:Text('Texte'),
+                    ),
+                    const SizedBox(height: 10,),
+                    TextField(
+                      controller: _textController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null, //the text space expands when the user is typing
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your note...',
+                        prefixIcon: Icon(Icons.note_alt_sharp),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0))
+                            ),
+                      )
+                    ),
+                    const SizedBox(height: 20,),
+                    const Align(
+                      alignment: Alignment.topLeft,
+                      child: Text('Date'),
+                    ),
+                    const SizedBox(height: 10,),
+                     TextField(
+                      controller: _dateTimeController,
+                      onTap:() {
+                        _selectedDate();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'DATE',
+                        prefixIcon: Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0))
+                        )
                       ),
-                )
+                    )
+                  ],
+                ),
               );
             default:
             devtools.log('default option of create or get existing note');
@@ -128,4 +177,21 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       );
 
   }
+  Future <void> _selectedDate() async {
+  DateTime? _picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2100)
+  );
+
+  if (_picked != null){
+    setState(() {
+      _dateTimeController.text = _picked.toString().split(" ")[0];
+    });
+  }
+  return;
 }
+}
+
+
