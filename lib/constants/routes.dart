@@ -1,0 +1,1 @@
+const createOrUpdateNotes = '/notes/createOrUpdateNote';

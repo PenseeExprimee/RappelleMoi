@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/helpers/loading/loading_screen.dart';
 import 'package:rappellemoi/services/auth/auth_firebase_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'package:rappellemoi/views/login_view.dart';
+import 'package:rappellemoi/views/notes/create_or_update_view.dart';
+import 'package:rappellemoi/views/notes/notes_view.dart';
 import 'package:rappellemoi/views/notification_view.dart';
 
 import 'package:rappellemoi/views/register_view.dart';
@@ -22,7 +25,10 @@ void main() {
     home: BlocProvider<AuthBloc>( //we create the bloc right from the start
       create: (context) => AuthBloc(FirebaseAuthProvider()),
       child: const HomePage(),
-      )
+      ),
+    routes: {
+      createOrUpdateNotes: (context) => const CreateOrUpdateNotesView()
+    }
   ));
 }
 
@@ -54,7 +60,7 @@ class HomePage extends StatelessWidget {
           return const LoginView();
         }
         else if (state is AuthStateLoggedIn){
-          return const NotificationPage();
+          return const NotesView();
         } else if (state is AuthStateRegistering){
           return const RegisterView();
         } 
