@@ -18,7 +18,7 @@ class NotesListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return ListView.builder(
       itemCount: notes.length, // the amount of notes to display
       itemBuilder: (context, index){
         final note = notes.elementAt(index);
@@ -53,7 +53,8 @@ class NotesListView extends StatelessWidget {
           ],
         );
       },
-      separatorBuilder: (context, index)=> const SizedBox(height: 5,)
+      //separatorBuilder: (context, index)=> const SizedBox(height: 5,),
+      physics: const AlwaysScrollableScrollPhysics(),
     );
   }
 }
