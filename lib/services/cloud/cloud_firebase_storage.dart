@@ -17,38 +17,54 @@ class FirebaseCloudStorage {
 
   //function to create a note
   Future<CloudNote> createNewNote({required String ownerUserId}) async {
-
+    devtools.log('create new note called');
     try{
       //create the note, add it to the collection
+      final currentDate = DateTime.now();
       final newNote = await notesCollection.add({
         'user_id': ownerUserId,
-        'text': '' //empty for now
+        'text': '', //empty for now,
+        'execution_date': currentDate
       });
       
       //get the note you just created
       final fetchedNote = await newNote.get();
-      devtools.log('fetched note $fetchedNote');
 
       //return the cloud note
       return CloudNote(
         noteId: fetchedNote.id,
         userId: ownerUserId,
         text: '',
-        //notificationDate: DateTime.now()
+        notificationDate: currentDate
       );
     } catch (e){
       throw CouldNotCreateNote();
     }
   }
 
-  Future<void> updateNote({required String noteId, required String text}) async{
+  Future<void> updateNote({required String noteId, required String text, required DateTime notificationDate}) async{
     
     try{
       await notesCollection.doc(noteId).update({
-        'text': text
+        'text': text,
+        'execution_date': notificationDate
       });
     } catch(e){
       devtools.log('An error appeared when you tried to update the note: $e');
+      throw CouldNotUpdateNote();
+    }
+
+  }
+
+  Future<void> updateNoteTime({required String noteId,required DateTime notificationDate}) async{
+    
+    try{
+      await notesCollection.doc(noteId).update({
+        'execution_date': notificationDate
+      });
+      devtools.log('Note successufully updated');
+    } catch(e){
+      devtools.log('An error appeared when you tried to update the time of the note: $e');
       throw CouldNotUpdateNote();
     }
 

@@ -79,7 +79,6 @@ class _NotesViewState extends State<NotesView> {
           switch(snapshot.connectionState){
             case ConnectionState.waiting:
             case ConnectionState.active:
-              devtools.log('Connection established with the stream of notes :D');
               //if the snaphot contains data, we return the a ListTile (to display the note to the user)
               if(snapshot.hasData){
                 //grab the notes

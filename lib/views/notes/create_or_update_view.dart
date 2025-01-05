@@ -15,10 +15,12 @@ class CreateOrUpdateNotesView extends StatefulWidget {
 class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
   CloudNote? _note;
-  DateTime? _date;
+  DateTime? _date; 
   late final TextEditingController _textController;
   late final TextEditingController _dateTimeController;
   late final FirebaseCloudStorage _notesService;
+
+  var flag = 0;
 
   @override
   void initState() {
@@ -32,13 +34,27 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
     //Grab an existing note if there is one
     final existingNote = context.getArgument<CloudNote>();
-    devtools.log('this is the existing note $existingNote');
     if (existingNote != null){
       devtools.log("there is an existing note");
       _note = existingNote;
       _textController.text = existingNote.text;
-      return existingNote;
+      
+      devtools.log('Existing note controller: ${existingNote.notificationDate}');
+      devtools.log('Date time controller: ${_dateTimeController.text}');
+
+      if(flag == 1 ){ //we just called selected date
+        devtools.log('flag equal to one');
+        await _notesService.updateNoteTime(noteId: existingNote.noteId, notificationDate: DateTime.parse(_dateTimeController.text));
+        flag =0;
+        return existingNote;
+    
+      } else{
+        _date = existingNote.notificationDate;
+        _dateTimeController.text = existingNote.notificationDate.toString().split(" ")[0];
+        return existingNote;
     }
+      }
+    
 
     //in case there is no note in the current stack, check of there is something in note
     final actualNote = _note;
@@ -51,10 +67,11 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     final currentId = currentUser.id;
     final newNote = await _notesService.createNewNote(ownerUserId: currentId);
     _note = newNote;
+    _dateTimeController.text = newNote.notificationDate.toString().split(" ")[0];
     return newNote;
   }
 
-  void deleteNoteIfTextIsEmpty(){
+  void deleteNoteIfTextIsEmpty(){ //the note get deleted even if the date is not empty -> no text no date
     final currentNote = _note;
 
     if(currentNote != null && _textController.text.isEmpty){ //the user clicked to add a note but did not enter anything in the text field
@@ -62,13 +79,15 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     }
   }
 
-  void saveNoteIfTextNotEmpty() async {
+  void saveNoteIfTextNotEmpty() async { //the note get saved only if the text is not empty
     final currentNote = _note;
     if(currentNote !=null && _textController.text.isNotEmpty){
       devtools.log('Save my note please :D');
+      devtools.log("DateTime text: ${_dateTimeController.text}");
       await _notesService.updateNote(
         noteId: currentNote.noteId, 
-        text: _textController.text
+        text: _textController.text,
+        notificationDate: DateTime.parse(_dateTimeController.text)
       );
     }
   }
@@ -78,19 +97,30 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     if(currentNote == null){ //there is no note
       return;
     }
+    devtools.log("Date format ok? ${_dateTimeController.text}");
     await _notesService.updateNote(
       noteId: currentNote.noteId,
-      text: _textController.text
+      text: _textController.text,
+      notificationDate: DateTime.parse(_dateTimeController.text)
     );
   }
 
   void _dateTimeControllerListener() async {
     final currentDate = _date;
+    final currentNote = _note;
     if(currentDate == null){ //there is no date
       return;
     }
-    //TO DO
+    if(currentNote == null){ //there is no note
+      return;
+    }
+    await _notesService.updateNote(
+      noteId: currentNote.noteId,
+      text: _textController.text,
+      notificationDate: DateTime.parse(_dateTimeController.text)
+    );
   }
+
   void setupTextControllerListener(){
     _textController.removeListener(_textControllerListener); //remove the function that reacts to text modification
     _textController.addListener(_textControllerListener); //add a function that reacts to text modification
@@ -169,7 +199,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
                 ),
               );
             default:
-            devtools.log('default option of create or get existing note');
               return const CircularProgressIndicator();
           }
         }
@@ -178,6 +207,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
   }
   Future <void> _selectedDate() async {
+    devtools.log('selected date called');
   DateTime? _picked = await showDatePicker(
     context: context,
     initialDate: DateTime.now(),
@@ -186,9 +216,14 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   );
 
   if (_picked != null){
-    setState(() {
+    devtools.log("_selecteDate function date: ${_picked.toString().split(" ")[0]}");
+    setState((){
       _dateTimeController.text = _picked.toString().split(" ")[0];
+      //flag = 1;
     });
+      flag = 1;
+    devtools.log("Datetime controller ${_dateTimeController.text}");
+
   }
   return;
 }
