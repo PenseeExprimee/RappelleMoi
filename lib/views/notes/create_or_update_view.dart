@@ -116,10 +116,13 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       return;
     }
     devtools.log("Date format ok? ${_dateTimeController.text}");
+    //Parse the string into a datetime object
+      DateFormat inputFormat = DateFormat('d MMMM yyyy HH:mm');
+      DateTime parsedDate = inputFormat.parse(_dateTimeController.text);
     await _notesService.updateNote(
       noteId: currentNote.noteId,
       text: _textController.text,
-      notificationDate: DateTime.parse(_dateTimeController.text)
+      notificationDate: parsedDate
     );
   }
 
