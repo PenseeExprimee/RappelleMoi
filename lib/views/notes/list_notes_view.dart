@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
 
 
@@ -16,6 +17,14 @@ class NotesListView extends StatelessWidget {
     required this.notes
   });
 
+  String changeDateFormatFromString(DateTime time){
+    // Define the desired format
+    DateFormat formatter = DateFormat('d MMMM yyyy HH:mm');
+    // Format the DateTime object to a string
+    String formattedDate = formatter.format(time);
+    return(formattedDate); // Example output: "6 January 2025 15:45"
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -32,11 +41,13 @@ class NotesListView extends StatelessWidget {
                 onTap: (){
                   onTap(note); //when we tape on a note, call the function onTap
                 },
-                title: Text(
-                  note.text,
-                  maxLines: 1,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
+                title:  Column(
+                  children: [
+                     Text("Date: ${changeDateFormatFromString(note.notificationDate!)}"),
+                     const SizedBox(height: 10,),
+                     Text("${note.text}")
+                     
+                  ],
                 ),
                 trailing: IconButton(
                   onPressed: () {
@@ -44,7 +55,7 @@ class NotesListView extends StatelessWidget {
                   },
                   icon: const Icon(Icons.delete)
                 ),
-                tileColor: Colors.orange[100],
+                tileColor: Colors.blue[100],
                 shape: RoundedRectangleBorder( //add style to the tile
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -58,3 +69,10 @@ class NotesListView extends StatelessWidget {
     );
   }
 }
+
+// Text(
+//                   note.text,
+//                   maxLines: 1,
+//                   softWrap: true,
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
