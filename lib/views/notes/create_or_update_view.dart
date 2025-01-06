@@ -65,7 +65,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
         return existingNote;
     }
       }
-    
 
     //in case there is no note in the current stack, check of there is something in note
     final actualNote = _note;
@@ -78,7 +77,8 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     final currentId = currentUser.id;
     final newNote = await _notesService.createNewNote(ownerUserId: currentId);
     _note = newNote;
-    _dateTimeController.text = newNote.notificationDate.toString().split(" ")[0];
+    devtools.log("New note notification date: ${newNote.notificationDate}");
+    _dateTimeController.text = changeDateFormatFromString(newNote.notificationDate!); //newNote.notificationDate.toString().split(" ")[0];
     return newNote;
   }
 
@@ -90,6 +90,21 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     }
   }
 
+  
+  DateTime changeDateFormat(String time){
+    DateFormat inputFormat = DateFormat('d MMMM yyyy HH:mm');
+    DateTime parsedDate = inputFormat.parse(time);
+    return parsedDate;
+  }
+
+  String changeDateFormatFromString(DateTime time){
+    // Define the desired format
+    DateFormat formatter = DateFormat('d MMMM yyyy HH:mm');
+    // Format the DateTime object to a string
+    String formattedDate = formatter.format(time);
+    return(formattedDate); // Example output: "6 January 2025 15:45"
+  }
+
   void saveNoteIfTextNotEmpty() async { //the note get saved only if the text is not empty
     final currentNote = _note;
     if(currentNote !=null && _textController.text.isNotEmpty){
@@ -98,8 +113,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       
 
       //Parse the string into a datetime object
-      DateFormat inputFormat = DateFormat('d MMMM yyyy HH:mm');
-      DateTime parsedDate = inputFormat.parse(_dateTimeController.text);
+      var parsedDate = changeDateFormat(_dateTimeController.text);
       devtools.log("Datetime parse: ${DateTime.parse(parsedDate.toString())}");
 
       await _notesService.updateNote(
@@ -117,8 +131,8 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     }
     devtools.log("Date format ok? ${_dateTimeController.text}");
     //Parse the string into a datetime object
-      DateFormat inputFormat = DateFormat('d MMMM yyyy HH:mm');
-      DateTime parsedDate = inputFormat.parse(_dateTimeController.text);
+    var parsedDate = changeDateFormat(_dateTimeController.text);
+
     await _notesService.updateNote(
       noteId: currentNote.noteId,
       text: _textController.text,
@@ -136,9 +150,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       return;
     }
 
-    //Parse the string into a datetime object
-      DateFormat inputFormat = DateFormat('d MMMM yyyy HH:mm');
-      DateTime parsedDate = inputFormat.parse(_dateTimeController.text);
+    var parsedDate = changeDateFormat(_dateTimeController.text);
       
     await _notesService.updateNote(
       noteId: currentNote.noteId,
@@ -233,13 +245,16 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       );
 
   }
+  
   Future <void> _selectedDate() async {
     devtools.log('selected date called');
+    devtools.log(_dateTimeController.text);
     DateTime? _picked = await DatePicker.showDateTimePicker(
     context,
     showTitleActions: true,
     minTime: DateTime.now(),
     maxTime: DateTime(3000,1,1),
+    currentTime: changeDateFormat(_dateTimeController.text),
     onConfirm: (time) {
       devtools.log("_selecteDate function date: ${time.toString().split(" ")[0]}");
       setState((){
@@ -252,6 +267,8 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
   return;
 }
+
+
 }
 
 
