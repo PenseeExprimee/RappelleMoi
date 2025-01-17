@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rappellemoi/generics/get_arguments.dart';
+import 'package:rappellemoi/notification/notification_service.dart';
 import 'package:rappellemoi/services/auth/auth_service.dart';
+import 'package:rappellemoi/services/bloc/auth_bloc.dart';
+import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
@@ -33,6 +37,11 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   }
 
   Future <CloudNote> createOrGetExistingNote(BuildContext context) async {
+
+    //If the user clicked on "re-schedule", he can update the note
+    if((ModalRoute.of(context)!.settings.arguments) != null){
+      _textController.text = (ModalRoute.of(context)!.settings.arguments).toString();
+    }
 
     //Grab an existing note if there is one
     final existingNote = context.getArgument<CloudNote>();
@@ -116,6 +125,15 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       var parsedDate = changeDateFormat(_dateTimeController.text);
       devtools.log("Datetime parse: ${DateTime.parse(parsedDate.toString())}");
 
+      //Create the notification here
+      NotificationService.scheduleNotification(
+              title: 'Rappelle moi :D',
+              body: _textController.text,
+              scheduledNotificationDateTime: parsedDate,
+              payLoad: currentNote.noteId,
+              );
+      
+      //Update the note
       await _notesService.updateNote(
         noteId: currentNote.noteId, 
         text: _textController.text,
@@ -257,6 +275,13 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     currentTime: changeDateFormat(_dateTimeController.text),
     onConfirm: (time) {
       devtools.log("_selecteDate function date: ${time.toString().split(" ")[0]}");
+
+      //Check if the time selected is in the future, if not, send an overlay
+      if(!time.isAfter(DateTime.now())){
+        //show an overlay saying the date selected has to be in the future
+        devtools.log('The selected time is not in the future!!');
+        _showPopup(context);
+      }
       setState((){
         var finalDate = DateFormat('d MMMM yyyy HH:mm').format(time);
         _dateTimeController.text = finalDate;
@@ -268,7 +293,25 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   return;
 }
 
-
+  void _showPopup(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Date invalide"),
+            content: const Text("La date choisie doit être dans le futur."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Ferme la boîte de dialogue
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+  }
 }
 
 

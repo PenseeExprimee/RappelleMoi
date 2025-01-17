@@ -43,11 +43,18 @@ dependencies:
   cloud_firestore: ^5.6.0
   flutter_datetime_picker_plus: ^2.1.0
   intl: ^0.18.0
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
+  http:
+  googleapis:
+  googleapis_auth:
+  firebase_messaging:
+  flutter_launcher_icons: ^0.14.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.14.2
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

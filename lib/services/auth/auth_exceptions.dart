@@ -10,3 +10,5 @@ class InvalidEmailAuthException implements Exception {}
 class WeakPasswordAuthException implements Exception {}
 
 class EmailAlreadyInUseAuthException implements Exception {}
+
+class DatePickerException implements Exception {}
