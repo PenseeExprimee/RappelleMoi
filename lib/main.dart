@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+//import 'package:googleapis/keep/v1.dart';
 import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/firebase_options.dart';
 import 'package:rappellemoi/helpers/loading/loading_screen.dart';
@@ -28,6 +30,11 @@ void main() async {
   //await FirebaseApi().initNotifications();
   tz.initializeTimeZones();
   await NotificationService.initNotification();
+  await Permission.notification.isDenied.then((value){
+    if(value){
+      Permission.notification.request();
+    }
+  });
   
   
   
