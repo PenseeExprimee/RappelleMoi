@@ -12,6 +12,7 @@ import 'package:rappellemoi/services/auth/auth_firebase_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/bloc/auth_state.dart';
+import 'package:rappellemoi/views/forgotten_password_view.dart';
 import 'package:rappellemoi/views/login_view.dart';
 import 'package:rappellemoi/views/notes/click_on_notification.dart';
 import 'package:rappellemoi/views/notes/create_or_update_view.dart';
@@ -20,6 +21,7 @@ import 'package:rappellemoi/views/notes/notes_view.dart';
 import 'package:rappellemoi/views/register_view.dart';
 import 'package:rappellemoi/views/verification_email_view.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'dart:developer' as devtools show log;
 
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -57,6 +59,7 @@ void main() async {
       createOrUpdateNotes: (context) => const CreateOrUpdateNotesView(),
       showNotificationRoute: (context) => const ClickOnNotificationView(),
       notesViewRoute: (context) => const NotesView(),
+      forgottenPasswordRoute: (context) => const ForgottenPasswordView(),
     }
   ));
 }
@@ -195,7 +198,11 @@ class HomePage extends StatelessWidget {
         else if (state is AuthStateNeedsEmailVerification){
           return const VerifEmail();
         }
+        else if (state is AuthStateForgottenPassword){
+          return const ForgottenPasswordView();
+        }
         else {
+          devtools.log('are we stuck here?');
           return const Scaffold(
             body: CircularProgressIndicator()
           );

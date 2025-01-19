@@ -74,7 +74,7 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                 ),
                 const SizedBox(
-                  height: 2
+                  height: 20
                 ),
                 TextField(
                   textAlign: TextAlign.center,
@@ -92,32 +92,35 @@ class _RegisterViewState extends State<RegisterView> {
               ]
             )
           ),
-          TextButton(
-            onPressed:() {
-              devtools.log("The register button has been pressed");
-              context.read<AuthBloc>().add(AuthEventRegistering(
-                  email: _email.text,
-                  password: _password.text,
-                )
-              );
-              //clear the field after the button has been pressed
-              _email.clear();
-              _password.clear();
-              
-              //clean the text field
-            },
-            style: TextButton.styleFrom(
-              foregroundColor:  Colors.white,
-              backgroundColor: Colors.blue,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular((100.0))),
-                side: BorderSide(
-                  color: Colors.blue,
-                  width: 5,
-                )
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextButton(
+              onPressed:() {
+                devtools.log("The register button has been pressed");
+                context.read<AuthBloc>().add(AuthEventRegistering(
+                    email: _email.text,
+                    password: _password.text,
+                  )
+                );
+                //clear the field after the button has been pressed
+                _email.clear();
+                _password.clear();
+                
+                //clean the text field
+              },
+              style: TextButton.styleFrom(
+                foregroundColor:  Colors.white,
+                backgroundColor: Colors.blue,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular((100.0))),
+                  side: BorderSide(
+                    color: Colors.blue,
+                    width: 5,
+                  )
+                ),
               ),
+              child: const Text( "Créer un compte",),
             ),
-            child: const Text( "Créer un compte",),
           ),
             
           const SizedBox(

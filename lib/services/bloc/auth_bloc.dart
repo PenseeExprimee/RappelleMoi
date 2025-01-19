@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:googleapis/admob/v1.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
@@ -18,7 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       final user = provider.currentUser;
 
       if(user == null){ //there is no user logged in
-        emit(const AuthStateLoggedOut(isLoading: false));
+        emit(const AuthStateLoggedOut(isLoading: false, exception: null));
 
       } else{
         emit(AuthStateLoggedIn(
@@ -36,7 +35,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       emit(
         const AuthStateLoggedOut(
           isLoading: true,
-          loadingText: "Login: please wait..."
+          loadingText: "Login: please wait...",
+          exception:null
           )
       );
       await Future.delayed(const Duration(seconds: 1)); //to have time to see the overlay
@@ -60,21 +60,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
 
       } on InvalidEmailAuthException { //episode 2
         
-        emit(const AuthStateLoggedOut(isLoading: true, loadingText: "The email is not valid."));
+        emit(const AuthStateLoggedOut(isLoading: true, exception:null,loadingText: "The email is not valid."));
         await Future.delayed(const Duration(seconds: 5));
-        emit(const AuthStateLoggedOut(isLoading: false));
+        emit(const AuthStateLoggedOut(isLoading: false, exception: null));
 
       } on InvalidCredentialsAuthException {
 
-        emit(const AuthStateLoggedOut(isLoading: true, loadingText: "Invalid credentials."));
+        emit(const AuthStateLoggedOut(isLoading: true,exception: null, loadingText: "Invalid credentials."));
         await Future.delayed(const Duration(seconds: 5));
-        emit(const AuthStateLoggedOut(isLoading: false));
+        emit(const AuthStateLoggedOut(isLoading: false, exception: null));
 
       } on Exception catch (e) { //for some reason the login failed
         
-        emit(AuthStateLoggedOut(isLoading: true, loadingText: "An error occured during the login process: $e"));
+        emit(AuthStateLoggedOut(isLoading: true,exception: null, loadingText: "An error occured during the login process: $e"));
         await Future.delayed(const Duration(seconds: 5));
-        emit(const AuthStateLoggedOut(isLoading: false));
+        emit(const AuthStateLoggedOut(isLoading: false, exception: null));
         devtools.log("An error occured during the login process: $e");
 
       }
@@ -85,17 +85,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       devtools.log("Auth event logged out triggered");
       emit(const AuthStateLoggedOut(
         isLoading: true, 
-        loadingText: "Logging out..."
+        loadingText: "Logging out...",
+        exception: null
         )
       );
       try {
         await provider.logout();
         emit(const AuthStateLoggedOut(
-          isLoading: false
+          isLoading: false,
+          exception: null,
           )
         );
       } on UserNotLoggedInAuthException { //happens when we click on the "pas encore de compte?"
-        emit(const AuthStateLoggedOut(isLoading: false));
+        emit(const AuthStateLoggedOut(isLoading: false, exception: null));
       } catch (e) {
         devtools.log("Auth event logged out: an error occured during the process: $e");
       }
@@ -107,7 +109,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     );
 
     on <AuthEventRegistering>((event, emit) async {
-      emit(const AuthStateLoggedOut(isLoading: true, loadingText: "Creating your account..."));
+      emit(const AuthStateLoggedOut(isLoading: true, exception: null,loadingText: "Creating your account..."));
       try {
         devtools.log("Auth event registering triggered");
         final email = event.email;
@@ -142,7 +144,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         
       }
     },);
+
+    on <AuthEventForgottenPassword>((event,emit) async{
+      try{
+        devtools.log('Event forgotten password triggered');
+        emit(const AuthStateForgottenPassword(isLoading: false, exception: null));
+
+      } on ForgottenPasswordException catch(e){
+        devtools.log("Forgotten password exception occured: $e");
+      }
+    });
+
+    on <AuthEventSendResetPasswordLink>((event,emit) async {
+      devtools.log('Send the reset password link');
+      try {
+        await provider.sendResetEmail(email: event.email);
+        devtools.log('Do i see this one?');
+        emit(const AuthStateForgottenPassword(isLoading: false, exception: null));
+        devtools.log('Auth state emitted');
+      
+      } on FailResetPasswordException catch (e){
+        
+        devtools.log('The password reset link could not be sent: because the email field was empty: $e');
+        emit(AuthStateForgottenPassword(isLoading: false, exception: e));
+
+      } on InvalidEmailForResetException catch(e){
+        devtools.log("The user should enter a valid email address: $e");
+        emit(AuthStateForgottenPassword(isLoading: false, exception: e));
+      } 
+    });
   }
 
+  
   
 }

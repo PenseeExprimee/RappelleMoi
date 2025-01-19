@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_user.dart';
 
 @immutable
@@ -23,7 +24,8 @@ class AuthStateLoggedIn extends AuthState{
 
 class AuthStateLoggedOut extends AuthState {
   // ignore: use_super_parameters
-  const AuthStateLoggedOut({required isLoading, loadingText}):super(isLoading: isLoading, loadingText: loadingText);
+  final Exception? exception;
+  const AuthStateLoggedOut({required isLoading, loadingText, required this.exception}):super(isLoading: isLoading, loadingText: loadingText);
 }
 
 class AuthStateRegistering extends AuthState {
@@ -34,4 +36,10 @@ class AuthStateRegistering extends AuthState {
 class AuthStateNeedsEmailVerification extends AuthState {
   // ignore: use_super_parameters
   const AuthStateNeedsEmailVerification({required isLoading}) : super(isLoading: isLoading);
+}
+
+class AuthStateForgottenPassword extends AuthState {
+  // ignore: use_super_parameters
+  final Exception? exception;
+  const AuthStateForgottenPassword({required isLoading, required this.exception, loadingText,}): super(isLoading: isLoading, loadingText: loadingText);
 }

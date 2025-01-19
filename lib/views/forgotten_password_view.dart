@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
@@ -8,22 +7,21 @@ import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'package:rappellemoi/utilities/dialogs/error_dialog.dart';
+import 'package:rappellemoi/utilities/dialogs/info_dialog.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class ForgottenPasswordView extends StatefulWidget {
+  const ForgottenPasswordView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<ForgottenPasswordView> createState() => _ForgottenPasswordViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
   late final TextEditingController _email;
-  late final TextEditingController _password;
 
   @override
   void initState() {
     _email = TextEditingController();
-    _password = TextEditingController();
 
     super.initState();
   }
@@ -31,24 +29,31 @@ class _LoginViewState extends State<LoginView> {
   @override
   void dispose() {
     _email.dispose();
-    _password.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState> (
+    return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if(state is AuthStateLoggedOut){
+        devtools.log("Current state: $state");
+       if(state is AuthStateForgottenPassword){
+        devtools.log("at least here no?");
           if(state.exception is FailResetPasswordException){
+            await showErrorDialog(context, "Please enter an email.");
+          }
+          else if(state.exception is InvalidEmailForResetException){
             await showErrorDialog(context, "Please enter a valid email.");
+          }
+          else{
+            devtools.log("HEEEEEEEEEEERE LAURA");
+            await showInfoDialog(context, "If an account with this email exists, a reset email has been sent.");
           }
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Rappelle moi : LOGIN"),
+          title: const Text("Rappelle moi : Mémoire courte!!"),
         ),
         body: ListView(
           children: [
@@ -58,10 +63,15 @@ class _LoginViewState extends State<LoginView> {
               width: 75.0,
               decoration: const BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage('assets/images/logo.jpg'),
+                      image: AssetImage('assets/images/eye_rolling.jpg'),
                       fit: BoxFit.contain)),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                  "Vous avez oublié votre mot de passe... \nEntrez l'adresse mail liée à votre compte pour recevoir un lien de réinitialisation.\nAttention, si le mail n'est associé à aucun compte, vous ne recevrez rien."),
+            ),
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(children: [
@@ -72,37 +82,24 @@ class _LoginViewState extends State<LoginView> {
                     autocorrect: false,
                     enableSuggestions: false,
                     decoration: const InputDecoration(
-                      hintText: "Enter your username...",
+                      hintText: "Enter your email...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    textAlign: TextAlign.center,
-                    enableSuggestions: false,
-                    obscureText: true,
-                    autocorrect: false,
-                    controller: _password,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your password...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 2),
                 ])),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextButton(
                 onPressed: () {
-                  devtools.log("The login button has been pressed");
-                  context.read<AuthBloc>().add(AuthEventLogin(
-                      email: _email.text, password: _password.text));
+                  devtools.log("The reset password button has been pressed");
                   //Clear the fields after the login button has been pressed
+                  context
+                      .read<AuthBloc>()
+                      .add(AuthEventSendResetPasswordLink(email: _email.text));
                   _email.clear();
-                  _password.clear();
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -115,31 +112,40 @@ class _LoginViewState extends State<LoginView> {
                       )),
                 ),
                 child: const Text(
-                  "Login",
+                  "Reset my password",
                 ),
               ),
             ),
-            const SizedBox(height: 50.0),
+            const SizedBox(height: 20.0),
             TextButton(
                 onPressed: (//Redirect toward the registering page
                     ) {
-                  context.read<AuthBloc>().add(const AuthEventShouldRegister());
+                  context.read<AuthBloc>().add(const AuthEventLoggedout());
                 },
-                child: const Text(
-                    'Pas encore de compte? Inscrivez vous en cliquant ici :D')),
-            TextButton(
-                onPressed: () {
-                  devtools.log('The user clicked on forgotten password');
-                  //Event Forgotten password
-                  context
-                      .read<AuthBloc>()
-                      .add(AuthEventForgottenPassword(email: _email.text));
-                  devtools.log('Password sent, check your email');
-                },
-                child: const Text('Mot de passe oublié'))
+                child: const Text("Page d'accueil")),
           ],
         ),
       ),
+    );
+  }
+
+  void _showPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Date invalide"),
+          content: const Text("La date choisie doit être dans le futur."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Ferme la boîte de dialogue
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

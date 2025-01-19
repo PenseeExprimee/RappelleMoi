@@ -33,3 +33,13 @@ class AuthEventShouldRegister extends AuthEvent {
 class AuthEventShouldVerifyEmail extends AuthEvent {
   const AuthEventShouldVerifyEmail();
 }
+
+class AuthEventForgottenPassword extends AuthEvent {
+  final String email;
+  const AuthEventForgottenPassword({required this.email});
+}
+
+class AuthEventSendResetPasswordLink extends AuthEvent{
+  final String email;
+  const AuthEventSendResetPasswordLink({required this.email});
+}

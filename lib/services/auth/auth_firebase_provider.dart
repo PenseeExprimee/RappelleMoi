@@ -138,10 +138,23 @@ class FirebaseAuthProvider implements AuthProvider {
   }) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      devtools.log('Just sent the password reset email');
     } on FirebaseException catch (e) {
-      devtools.log("Send reset email, error occured: ${e.code}");
-      throw GenericAuthException();
+      if(e.code == "missing-email"){
+        devtools.log('Missing email');
+          throw FailResetPasswordException();
+        }
+      else if (e.code== "invalid-email"){
+        devtools.log("Please enter a valid email address");
+        throw InvalidEmailForResetException();
+      }
+      else{
+        devtools.log("This is the error: ${e.code}");
+        throw GenericAuthException();
+      }
       
+    } catch(e){
+      devtools.log("Something else happened during the password reset");
     }
   }
 
