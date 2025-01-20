@@ -53,7 +53,7 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Rappelle moi : Mémoire courte!!"),
+          title: const Text("MEMOIRE COURTE"),
         ),
         body: ListView(
           children: [
@@ -82,7 +82,7 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
                     autocorrect: false,
                     enableSuggestions: false,
                     decoration: const InputDecoration(
-                      hintText: "Enter your email...",
+                      hintText: "Entrez votre adresse email...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
@@ -112,7 +112,7 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
                       )),
                 ),
                 child: const Text(
-                  "Reset my password",
+                  "Reset mon mot de passe",
                 ),
               ),
             ),

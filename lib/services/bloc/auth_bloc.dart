@@ -61,19 +61,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       } on InvalidEmailAuthException { //episode 2
         
         emit(const AuthStateLoggedOut(isLoading: true, exception:null,loadingText: "The email is not valid."));
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 2));
         emit(const AuthStateLoggedOut(isLoading: false, exception: null));
 
       } on InvalidCredentialsAuthException {
 
         emit(const AuthStateLoggedOut(isLoading: true,exception: null, loadingText: "Invalid credentials."));
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 2));
         emit(const AuthStateLoggedOut(isLoading: false, exception: null));
 
       } on Exception catch (e) { //for some reason the login failed
         
         emit(AuthStateLoggedOut(isLoading: true,exception: null, loadingText: "An error occured during the login process: $e"));
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 2));
         emit(const AuthStateLoggedOut(isLoading: false, exception: null));
         devtools.log("An error occured during the login process: $e");
 

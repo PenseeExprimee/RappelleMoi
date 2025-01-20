@@ -14,6 +14,7 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  bool passwordVisibility = true;
 
 
   @override
@@ -32,11 +33,16 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
+  void togglePasswordVisibility(){
+    setState(() {
+      passwordVisibility = !passwordVisibility;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Rappelle moi: Créer un compte"),
+        title: const Text("CREER UN COMPTE"),
       ),
       body: ListView (
         children: [
@@ -67,7 +73,7 @@ class _RegisterViewState extends State<RegisterView> {
                   autocorrect: false,
                   enableSuggestions: false,
                   decoration: const InputDecoration(
-                    hintText: "Enter your email address...",
+                    hintText: "Entrez votre adresse mail...",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
@@ -79,14 +85,18 @@ class _RegisterViewState extends State<RegisterView> {
                 TextField(
                   textAlign: TextAlign.center,
                   enableSuggestions: false,
-                  obscureText: true,
+                  obscureText: passwordVisibility,
                   autocorrect: false,
                   controller: _password,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your password...',
-                    border: OutlineInputBorder(
+                  decoration: InputDecoration(
+                    hintText: 'Entrez votre mot de passe...',
+                    border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
+                    suffixIcon: IconButton(
+                      onPressed: togglePasswordVisibility,
+                      icon: Icon(passwordVisibility ? Icons.visibility : Icons.visibility_off),
+                    )
                   ),
                 ),
               ]
@@ -119,7 +129,7 @@ class _RegisterViewState extends State<RegisterView> {
                   )
                 ),
               ),
-              child: const Text( "Créer un compte",),
+              child: const Text("CREER UN COMPTE",),
             ),
           ),
             

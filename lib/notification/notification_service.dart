@@ -11,7 +11,7 @@ class NotificationService {
 
   static Future<void> initNotification() async {
     AndroidInitializationSettings initializationSettingsAndroid =
-        const AndroidInitializationSettings('launch_background');
+        const AndroidInitializationSettings('notification_icon');
 
     var initializationSettingsIOS =  const DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -44,7 +44,7 @@ class NotificationService {
   static Future notificationDetails() async {
     return const NotificationDetails(
         android: AndroidNotificationDetails('channelId', 'channelName',
-            importance: Importance.max),
+            importance: Importance.max, icon: 'notification_icon'),
         iOS: DarwinNotificationDetails());
   }
 

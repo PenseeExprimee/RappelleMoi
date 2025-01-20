@@ -55,6 +55,15 @@ class _NotesViewState extends State<NotesView> {
                     Text('Logout')
                     ],),
                   ),
+                  const PopupMenuItem<MenuAction>(
+                  value: MenuAction.deleteAccount,
+                  child: Row(children: [
+                    Icon(Icons.delete),
+                    SizedBox(width: 10,),
+                    Text('Delete my account')
+                    ],),
+                  ),
+                  
               ];
             },
             onSelected: (action){
@@ -63,7 +72,8 @@ class _NotesViewState extends State<NotesView> {
                   //send an event to the bloc to logout
                   devtools.log('Button logout pressed');
                   context.read<AuthBloc>().add(const AuthEventLoggedout());
-                  
+                case MenuAction.deleteAccount:
+                  devtools.log('Button delete account pressed');
                 default:
                   devtools.log("Something happened when trying to logout from the notification page");
               }

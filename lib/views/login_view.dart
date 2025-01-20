@@ -19,6 +19,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  bool passwordVisibility = true;
 
   @override
   void initState() {
@@ -35,6 +36,12 @@ class _LoginViewState extends State<LoginView> {
 
     super.dispose();
   }
+  
+  void _togglePasswordVisibility(){
+    setState(() {
+      passwordVisibility = !passwordVisibility;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Rappelle moi : LOGIN"),
+          title: const Text("CONNEXION"),
         ),
         body: ListView(
           children: [
@@ -72,7 +79,7 @@ class _LoginViewState extends State<LoginView> {
                     autocorrect: false,
                     enableSuggestions: false,
                     decoration: const InputDecoration(
-                      hintText: "Enter your username...",
+                      hintText: "Entrez votre adresse mail...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
@@ -82,14 +89,20 @@ class _LoginViewState extends State<LoginView> {
                   TextField(
                     textAlign: TextAlign.center,
                     enableSuggestions: false,
-                    obscureText: true,
+                    obscureText: passwordVisibility,
                     autocorrect: false,
                     controller: _password,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your password...',
-                      border: OutlineInputBorder(
+                    decoration: InputDecoration(
+                      hintText: 'Entrez votre mot de passe...',
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVisibility ? Icons.visibility : Icons.visibility_off
+                        ),
+                        onPressed: _togglePasswordVisibility,
+                      )
                     ),
                   ),
                 ])),
@@ -115,7 +128,7 @@ class _LoginViewState extends State<LoginView> {
                       )),
                 ),
                 child: const Text(
-                  "Login",
+                  "Connexion",
                 ),
               ),
             ),
