@@ -165,12 +165,12 @@ class FirebaseAuthProvider implements AuthProvider {
 
     try{
     
-    //get the current user
-    final currentUser = FirebaseAuth.instance.currentUser;
-    //check if the user is not null
-    if(currentUser == null){
-      throw UserNotLoggedInAuthException();
-    }
+      //get the current user
+      final currentUser = FirebaseAuth.instance.currentUser;
+      //check if the user is not null
+      if(currentUser == null){
+        throw UserNotLoggedInAuthException();
+      }
       //Check if the credentials passed are not null
       if(credentials["email"] != null && credentials["password"] !=null) {
         final email = credentials["email"];
@@ -202,11 +202,13 @@ class FirebaseAuthProvider implements AuthProvider {
       
     
     } on FirebaseException catch (e){
-      devtools.log("Oups: ${e.code}");
-      throw CouldNotDeleteTheAccountException();
+      if(e.code == "invalid-email" || e.code == "wrong-password"){
+        devtools.log("Invalid credentials");
+        throw InvalidCredentialsAuthException();
+      }
     } catch(e){
       devtools.log('Another error appeared: $e');
-      throw GenericAuthException();
+      throw CouldNotDeleteTheAccountException();
     }
     //get the notes associated to the user and delete them
     //delete the user account

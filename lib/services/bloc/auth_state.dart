@@ -18,8 +18,9 @@ class AuthStateUninitialized extends AuthState {
 
 class AuthStateLoggedIn extends AuthState{
   final AuthUser user;
+  final Exception? exception;
   // ignore: use_super_parameters
-  const AuthStateLoggedIn({ required isLoading, required this.user}): super(isLoading: isLoading);
+  const AuthStateLoggedIn({ required isLoading, required this.user, required this.exception}): super(isLoading: isLoading);
 }
 
 class AuthStateLoggedOut extends AuthState {

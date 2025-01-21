@@ -23,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         emit(AuthStateLoggedIn(
           isLoading: false,
           user: user,
+          exception: null,
           )
         );
       }
@@ -55,7 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
           emit(const AuthStateNeedsEmailVerification(isLoading: false)); //the email has already been sent at the creation of the account. The user will be able to re-send the email if he wants to.
         }
         else {
-          emit(AuthStateLoggedIn(isLoading: false, user: user));
+          emit(AuthStateLoggedIn(isLoading: false, user: user, exception: null));
         }
 
       } on InvalidEmailAuthException { //episode 2
@@ -176,12 +177,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
 
     on <AuthEventDeleteMyAccount>((event, emit) async {
       try {
+
         await provider.deleteMyAccount(credentials: event.credentials);
         emit(const AuthStateLoggedOut(isLoading: false, exception: null));
+
       } on CouldNotDeleteTheAccountException catch (e) {
         devtools.log("An error occured while trying to delete the account: $e");
-      } on GenericAuthException catch(e){
-        devtools.log('An error occured while deleting the account: $e');
+        //grab the currrent user
+        final user = provider.currentUser;
+        emit(AuthStateLoggedIn(isLoading: false, user: user!, exception: e ));
+      
+      } on InvalidCredentialsAuthException catch (e){
+        devtools.log('Credentials not passed or wrong: $e');
+        //grab the currrent user
+        final user = provider.currentUser;
+        emit(AuthStateLoggedIn(isLoading: false, user: user!, exception: e ));
       }
     });
   }
