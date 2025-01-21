@@ -9,6 +9,9 @@ import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
+import 'package:rappellemoi/utilities/dialogs/choice_dialog.dart';
+import 'package:rappellemoi/utilities/dialogs/field_dialog.dart';
+import 'package:rappellemoi/utilities/dialogs/field_dialog_test.dart';
 import 'package:rappellemoi/views/notes/list_notes_view.dart';
 
 class NotesView extends StatefulWidget {
@@ -66,7 +69,7 @@ class _NotesViewState extends State<NotesView> {
                   
               ];
             },
-            onSelected: (action){
+            onSelected: (action) async{
               switch (action) {
                 case MenuAction.logout:
                   //send an event to the bloc to logout
@@ -74,6 +77,25 @@ class _NotesViewState extends State<NotesView> {
                   context.read<AuthBloc>().add(const AuthEventLoggedout());
                 case MenuAction.deleteAccount:
                   devtools.log('Button delete account pressed');
+                  //Confirmation pop up
+                  final choiceConfirmed = await choiceDialog(context, "Supprimer votre compte supprimera toutes les notes associées. Voulez vous vraiment supprimer votre compte?");
+                   devtools.log("value of choice confirmed: $choiceConfirmed"); 
+                  if(choiceConfirmed == true){
+                    devtools.log('choice confirmed and true');
+                    //reauthenticate the user
+                    final Map<String, String>?value = await showFieldDialog(context, "Je sais pas");
+                    
+                    if(value !=null){
+                    context.read<AuthBloc>().add(AuthEventDeleteMyAccount(credentials: value));
+                    }
+                    //get all notes and delete them
+                    // final allNotes = await _notesService.getNotes(ownerUserId: userId);
+                    // allNotes.forEach((note){
+                    //   devtools.log("These are the notes: ${note.noteId}");
+                    //   //call delete note
+                    //   _notesService.deleteNote(noteId: note.noteId);
+                    // });
+                  }
                 default:
                   devtools.log("Something happened when trying to logout from the notification page");
               }

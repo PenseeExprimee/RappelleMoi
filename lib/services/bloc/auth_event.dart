@@ -43,3 +43,9 @@ class AuthEventSendResetPasswordLink extends AuthEvent{
   final String email;
   const AuthEventSendResetPasswordLink({required this.email});
 }
+
+class AuthEventDeleteMyAccount extends AuthEvent {
+  final Map<String,String> credentials;
+  
+  const AuthEventDeleteMyAccount({required this.credentials});
+}

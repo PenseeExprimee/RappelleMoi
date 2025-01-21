@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rappellemoi/firebase_options.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_provider.dart';
 import 'package:rappellemoi/services/auth/auth_user.dart';
-import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth, FirebaseAuthException;
+import 'package:firebase_auth/firebase_auth.dart' show AuthCredential, EmailAuthProvider, FirebaseAuth, FirebaseAuthException;
 import 'dart:developer' as devtools show log;
 
 class FirebaseAuthProvider implements AuthProvider {
@@ -156,6 +158,58 @@ class FirebaseAuthProvider implements AuthProvider {
     } catch(e){
       devtools.log("Something else happened during the password reset");
     }
+  }
+  
+  @override
+  Future<void> deleteMyAccount({required credentials}) async {
+
+    try{
+    
+    //get the current user
+    final currentUser = FirebaseAuth.instance.currentUser;
+    //check if the user is not null
+    if(currentUser == null){
+      throw UserNotLoggedInAuthException();
+    }
+      //Check if the credentials passed are not null
+      if(credentials["email"] != null && credentials["password"] !=null) {
+        final email = credentials["email"];
+        final password = credentials["password"];
+        
+        //Reauthenticate
+        AuthCredential nonNullCredentials = EmailAuthProvider.credential(email: email! , password: password!);
+        await currentUser.reauthenticateWithCredential(nonNullCredentials);
+        devtools.log("Reauthentication done");
+        devtools.log("This is the current user uid: ${currentUser.uid}");
+        
+        //Get the notes of the user
+        final QuerySnapshot allCurrentUserNotes = await FirebaseFirestore.instance.collection('notes').where("user_id", isEqualTo: currentUser.uid).get();
+        for (QueryDocumentSnapshot doc in allCurrentUserNotes.docs) {
+          await doc.reference.delete();
+        }
+        devtools.log("All notes of the user deleted");
+
+        //Delete the notes of the user
+        await FirebaseFirestore.instance.collection('notes').doc(currentUser.uid).delete();
+        devtools.log("Notes of the user deleted from the database");
+
+        //Cancel all scheduled notification
+        await FlutterLocalNotificationsPlugin().cancelAll();
+
+        //Delete the user
+        await currentUser.delete();
+      }
+      
+    
+    } on FirebaseException catch (e){
+      devtools.log("Oups: ${e.code}");
+      throw CouldNotDeleteTheAccountException();
+    } catch(e){
+      devtools.log('Another error appeared: $e');
+      throw GenericAuthException();
+    }
+    //get the notes associated to the user and delete them
+    //delete the user account
   }
 
 }

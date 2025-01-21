@@ -173,6 +173,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         emit(AuthStateForgottenPassword(isLoading: false, exception: e));
       } 
     });
+
+    on <AuthEventDeleteMyAccount>((event, emit) async {
+      try {
+        await provider.deleteMyAccount(credentials: event.credentials);
+        emit(const AuthStateLoggedOut(isLoading: false, exception: null));
+      } on CouldNotDeleteTheAccountException catch (e) {
+        devtools.log("An error occured while trying to delete the account: $e");
+      } on GenericAuthException catch(e){
+        devtools.log('An error occured while deleting the account: $e');
+      }
+    });
   }
 
   

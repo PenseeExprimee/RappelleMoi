@@ -24,6 +24,6 @@ abstract class AuthProvider{
     required String email,
   });
 
-
+  Future <void> deleteMyAccount({required Map<String, String> credentials});
 
 }

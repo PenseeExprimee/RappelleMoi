@@ -48,6 +48,11 @@ class AuthService extends AuthProvider{
   Future<void> sendResetEmail({required String email}) {
     return provider.sendResetEmail(email: email);
   }
+  
+  @override
+  Future<void> deleteMyAccount({required Map<String, String >credentials}) {
+    return provider.deleteMyAccount(credentials: credentials);
+  }
 
   
 }

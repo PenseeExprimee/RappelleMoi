@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rappellemoi/generics/get_arguments.dart';
-import 'package:rappellemoi/notification/notification_service.dart';
+import 'package:rappellemoi/services/notification/notification_service.dart';
 import 'package:rappellemoi/services/auth/auth_service.dart';
 import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
 import 'package:rappellemoi/services/cloud/cloud_note.dart';

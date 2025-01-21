@@ -7,7 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/firebase_options.dart';
 import 'package:rappellemoi/helpers/loading/loading_screen.dart';
-import 'package:rappellemoi/notification/notification_service.dart';
+import 'package:rappellemoi/services/notification/notification_service.dart';
 import 'package:rappellemoi/services/auth/auth_firebase_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';

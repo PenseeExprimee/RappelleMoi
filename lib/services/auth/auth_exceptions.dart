@@ -18,3 +18,5 @@ class ForgottenPasswordException implements Exception {}
 class FailResetPasswordException implements Exception {}
 
 class InvalidEmailForResetException implements Exception {}
+
+class CouldNotDeleteTheAccountException implements Exception {}
