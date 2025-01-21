@@ -117,12 +117,31 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
               ),
             ),
             const SizedBox(height: 20.0),
-            TextButton(
-                onPressed: (//Redirect toward the registering page
-                    ) {
-                  context.read<AuthBloc>().add(const AuthEventLoggedout());
-                },
-                child: const Text("Page d'accueil")),
+            Padding(
+              padding: const EdgeInsets.only(left: 110, right: 110),
+              child: TextButton(
+                
+                style: TextButton.styleFrom(
+                  foregroundColor:  Colors.white,
+                  backgroundColor: Colors.cyan[400],
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular((100.0))),
+                  ),
+                ),
+                  onPressed: (//Redirect toward the registering page
+                      ) {
+                    context.read<AuthBloc>().add(const AuthEventLoggedout());
+                  },
+                  child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.home),
+                    SizedBox(width: 10),
+                    Text("Page d'accueil")
+                    ],
+                  )
+              ),
+            ),
           ],
         ),
       ),
