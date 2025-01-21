@@ -4,7 +4,7 @@
     <application
         android:label="RappelleMoi"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
         <receiver
         android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
