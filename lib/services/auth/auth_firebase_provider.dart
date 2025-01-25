@@ -8,6 +8,11 @@ import 'package:rappellemoi/services/auth/auth_user.dart';
 import 'package:firebase_auth/firebase_auth.dart' show AuthCredential, EmailAuthProvider, FirebaseAuth, FirebaseAuthException;
 import 'dart:developer' as devtools show log;
 
+
+// This class gathers all the functions that will be used in our app
+// when the chosen provider is firebase.
+
+
 class FirebaseAuthProvider implements AuthProvider {
   
   @override

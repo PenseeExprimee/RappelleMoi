@@ -8,6 +8,8 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 import 'dart:developer' as devtools show log;
 
+// The page displayed  when the user creates his notes.
+
 class CreateOrUpdateNotesView extends StatefulWidget {
   const CreateOrUpdateNotesView({super.key});
 
@@ -49,7 +51,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       
 
       if(flag == 1 ){ //we just called selected date
-        devtools.log('flag equal to one');
         devtools.log(_dateTimeController.text);
         await _notesService.updateNoteTime(noteId: existingNote.noteId, notificationDate: DateTime.parse(_dateTimeController.text));
         flag =0;
@@ -58,7 +59,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       } else{
         _date = existingNote.notificationDate;
         if(_date != null){
-          devtools.log("HEEEEEEEEEEEEERE");
           devtools.log(_date.toString());
           var finalDate = DateFormat('d MMMM yyyy HH:mm').format(_date!);
           devtools.log(finalDate);
@@ -114,7 +114,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   void saveNoteIfTextNotEmpty() async { //the note get saved only if the text is not empty
     final currentNote = _note;
     if(currentNote !=null && _textController.text.isNotEmpty){
-      devtools.log('Save my note please :D');
       devtools.log("DateTime text: ${_dateTimeController.text}");
       
 
@@ -195,7 +194,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ta notification'),
+        title: const Text('Crée ta notification'),
       ),
       body: FutureBuilder(
         future: createOrGetExistingNote(context), 
@@ -262,7 +261,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   }
   
   Future <void> _selectedDate() async {
-    devtools.log('selected date called');
     devtools.log(_dateTimeController.text);
     DateTime? _picked = await DatePicker.showDateTimePicker(
     context,

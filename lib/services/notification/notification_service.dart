@@ -5,6 +5,12 @@ import 'package:timezone/timezone.dart' as tz;
 import 'dart:developer' as devtools show log;
 import 'dart:convert';
 
+//This class handles the notification.
+// - init notifications : to initialize the notifications
+// - handle notification: redirection happening when the user clicks on the notification
+// - notifications details: what the notification will look like
+// - schedule notification: the notication will arrive at a set time
+
 class NotificationService {
   static final FlutterLocalNotificationsPlugin notificationsPlugin =
       FlutterLocalNotificationsPlugin();

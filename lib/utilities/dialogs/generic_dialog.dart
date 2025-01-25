@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// We need windows to be displayed to the users whenever we want to give them some information
+// regular information, errors...
+
 //DialogOptionBuilder is a function that returns a map
 typedef  DialogOptionBuilder<T> = Map<String,T?> Function(); 
 

@@ -1,5 +1,8 @@
 import 'package:rappellemoi/services/auth/auth_user.dart';
 
+//This class defines the functions that will be used
+// for all providers. (firebase or others)
+
 abstract class AuthProvider{
 
   Future <void> initialize();

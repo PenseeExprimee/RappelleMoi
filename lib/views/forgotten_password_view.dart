@@ -9,6 +9,7 @@ import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'package:rappellemoi/utilities/dialogs/error_dialog.dart';
 import 'package:rappellemoi/utilities/dialogs/info_dialog.dart';
 
+//This page is displayed when the user clicks on  "mot de passe oublié"
 class ForgottenPasswordView extends StatefulWidget {
   const ForgottenPasswordView({super.key});
 
@@ -38,7 +39,6 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
       listener: (context, state) async {
         devtools.log("Current state: $state");
        if(state is AuthStateForgottenPassword){
-        devtools.log("at least here no?");
           if(state.exception is FailResetPasswordException){
             await showErrorDialog(context, "Please enter an email.");
           }
@@ -46,7 +46,6 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
             await showErrorDialog(context, "Please enter a valid email.");
           }
           else{
-            devtools.log("HEEEEEEEEEEERE LAURA");
             await showInfoDialog(context, "If an account with this email exists, a reset email has been sent.");
           }
         }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
 
 
+// The user lands on this page after login.
 typedef NotesCallback = void Function (CloudNote note);
 
 class NotesListView extends StatelessWidget {
@@ -43,7 +44,7 @@ class NotesListView extends StatelessWidget {
                 },
                 title:  Column(
                   children: [
-                     Text("Date: ${changeDateFormatFromString(note.notificationDate!)}"),
+                     Text("${changeDateFormatFromString(note.notificationDate!)}"),
                      const SizedBox(height: 10,),
                      Text("${note.text}")
                      
@@ -70,9 +71,3 @@ class NotesListView extends StatelessWidget {
   }
 }
 
-// Text(
-//                   note.text,
-//                   maxLines: 1,
-//                   softWrap: true,
-//                   overflow: TextOverflow.ellipsis,
-//                 ),

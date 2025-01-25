@@ -1,9 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-//import 'package:googleapis/keep/v1.dart';
 import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/firebase_options.dart';
 import 'package:rappellemoi/helpers/loading/loading_screen.dart';
@@ -27,9 +25,8 @@ import 'dart:developer' as devtools show log;
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); //initialisation préalable du moteur flutter
+  WidgetsFlutterBinding.ensureInitialized(); //initialization of flutter engine
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  //await FirebaseApi().initNotifications();
   tz.initializeTimeZones();
   await NotificationService.initNotification();
   await Permission.notification.isDenied.then((value){
@@ -39,11 +36,6 @@ void main() async {
   });
   
   
-  
-  
-  
-  
-  //runApp(const MyApp());
   runApp( MaterialApp(
     title: 'Rappelle moi!',
     navigatorKey: navigatorKey,
@@ -62,105 +54,6 @@ void main() async {
       forgottenPasswordRoute: (context) => const ForgottenPasswordView(),
     }
   ));
-}
-
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner:  false,
-//       home: const MyHomePage(title: "Something is the title",),
-//       navigatorKey: navigatorKey ,
-//       routes: {
-//         '/notification_screen': (context) => const NotificationPageTuotrial(),
-//       },
-//     );
-//   }
-// }
-
-
-DateTime scheduleTime = DateTime.now();
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DatePickerTxt(),
-            ScheduleBtn(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class DatePickerTxt extends StatefulWidget {
-  const DatePickerTxt({
-    super.key,
-  });
-
-  @override
-  State<DatePickerTxt> createState() => _DatePickerTxtState();
-}
-
-class _DatePickerTxtState extends State<DatePickerTxt> {
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        DatePicker.showDateTimePicker(
-          context,
-          showTitleActions: true,
-          onChanged: (date) => scheduleTime = date,
-          onConfirm: (date) {},
-        );
-      },
-      child: const Text(
-        'Select Date Time',
-        style: TextStyle(color: Colors.blue),
-      ),
-    );
-  }
-}
-
-class ScheduleBtn extends StatelessWidget {
-  const ScheduleBtn({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      child: const Text('Show notification'),
-      onPressed: () {
-        //debugPrint('Notification Scheduled for $scheduleTime');
-        //NotificationService.showNotification(title: 'tilte', body: 'laura');
-           NotificationService.scheduleNotification(
-              title: 'Scheduled Notification',
-              body: '$scheduleTime',
-              scheduledNotificationDateTime: scheduleTime);
-      },
-    );
-  }
 }
 
 
@@ -186,6 +79,7 @@ class HomePage extends StatelessWidget {
           LoadingScreen().hide();
         }
       },
+      //The app displays different view, depending on the state.
       builder: (context,state){
         if(state is AuthStateLoggedOut){
           return const LoginView();
@@ -202,7 +96,6 @@ class HomePage extends StatelessWidget {
           return const ForgottenPasswordView();
         }
         else {
-          devtools.log('are we stuck here?');
           return const Scaffold(
             body: CircularProgressIndicator()
           );

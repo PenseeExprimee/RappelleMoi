@@ -3,7 +3,9 @@ import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
 import 'dart:convert';
 import 'package:rappellemoi/main.dart';
-import 'dart:developer' as devtools show log;
+
+
+//This class defines the page that will be displayed  when the user clicks on the notification.
 
 class ClickOnNotificationView extends StatefulWidget {
   const ClickOnNotificationView({super.key});
@@ -32,7 +34,7 @@ class _ClickOnNotificationViewState extends State<ClickOnNotificationView> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text("It's time :D"),
+        title: const Text("C'est l'heure!!! :D"),
         
       ),
       body: Center(
@@ -110,7 +112,6 @@ class _ClickOnNotificationViewState extends State<ClickOnNotificationView> {
                     child: ElevatedButton(
                         onPressed: () {
                           // Button action
-                          devtools.log('Clicked on delete notif apres click notif');
                           _notesService.deleteNote(noteId: noteId);
                           navigatorKey.currentState?.pop();
 
@@ -122,7 +123,7 @@ class _ClickOnNotificationViewState extends State<ClickOnNotificationView> {
                             borderRadius: BorderRadius.circular(8), // Rounded corners
                           ),
                         ),
-                        child: const Text("C'est fait",
+                        child: const Text("C'est fait!",
                           style: TextStyle(
                             color: Colors.white
                           ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rappellemoi/services/bloc/auth_bloc.dart';
-import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'dart:developer' as devtools show log;
 
+
+// We need windows to be displayed to the users whenever we want to give them some information
+// regular information, errors...
 //DialogOptionBuilder is a function that returns a map
 typedef  DialogOptionBuilder<T> = Map<String,T?> Function(); 
 

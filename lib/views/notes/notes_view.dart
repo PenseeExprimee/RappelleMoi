@@ -13,10 +13,11 @@ import 'dart:developer' as devtools show log;
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
 import 'package:rappellemoi/utilities/dialogs/choice_dialog.dart';
 import 'package:rappellemoi/utilities/dialogs/error_dialog.dart';
-import 'package:rappellemoi/utilities/dialogs/field_dialog.dart';
 import 'package:rappellemoi/utilities/dialogs/field_dialog_test.dart';
 import 'package:rappellemoi/views/notes/list_notes_view.dart';
 
+
+//This class defines the notes that will be defined on the note page.
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
 
@@ -44,10 +45,10 @@ class _NotesViewState extends State<NotesView> {
       listener: (context, state) async {
         if(state is AuthStateLoggedIn){
           if(state.exception is InvalidCredentialsAuthException){
-            await showErrorDialog(context,"Please enter valid credentials");
+            await showErrorDialog(context,"Entrer des credentials valides.");
           }
           else if (state.exception is CouldNotDeleteTheAccountException){
-            await showErrorDialog(context,"Error while trying to delete the account.");
+            await showErrorDialog(context,"Il y a eu une erreur lors de la suppression de votre compte.");
           }
         }
       },
@@ -70,7 +71,7 @@ class _NotesViewState extends State<NotesView> {
                           SizedBox(
                             width: 10,
                           ),
-                          Text('Logout')
+                          Text('Déconnexion')
                         ],
                       ),
                     ),
@@ -82,7 +83,7 @@ class _NotesViewState extends State<NotesView> {
                           SizedBox(
                             width: 10,
                           ),
-                          Text('Delete my account')
+                          Text('Supprimer mon compte')
                         ],
                       ),
                     ),
@@ -105,19 +106,13 @@ class _NotesViewState extends State<NotesView> {
                         devtools.log('choice confirmed and true');
                         //reauthenticate the user
                         final Map<String, String>? value =
-                            await showFieldDialog(context, "Je sais pas");
+                            await showFieldDialog(context, "Initial value of the dict");
 
                         if (value != null) {
                           context.read<AuthBloc>().add(
                               AuthEventDeleteMyAccount(credentials: value));
                         }
-                        //get all notes and delete them
-                        // final allNotes = await _notesService.getNotes(ownerUserId: userId);
-                        // allNotes.forEach((note){
-                        //   devtools.log("These are the notes: ${note.noteId}");
-                        //   //call delete note
-                        //   _notesService.deleteNote(noteId: note.noteId);
-                        // });
+                       
                       }
                     default:
                       devtools.log(
@@ -126,7 +121,7 @@ class _NotesViewState extends State<NotesView> {
                 },
               )
             ],
-            title: const Text('Ta liste de future notifications'),
+            title: const Text('Crée ta notification!'),
           ),
           body: StreamBuilder(
             stream: _notesService.allNotes(
@@ -156,7 +151,7 @@ class _NotesViewState extends State<NotesView> {
                     return const CircularProgressIndicator();
                   }
                 default:
-                  devtools.log("I don't know what is going on, please wait...");
+                  devtools.log("Notes view error...");
                   return const CircularProgressIndicator();
               }
             },

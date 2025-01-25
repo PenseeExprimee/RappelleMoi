@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:flutter/material.dart';
 
+
+// This class defines what a user will be in our code.
+// Ths class only exposes the attributes we need.
 @immutable
 class AuthUser {
   

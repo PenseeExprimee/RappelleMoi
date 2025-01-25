@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+//This class defines what the note will look like in our database.
 @immutable
 class CloudNote {
   static final _defaultDate = DateTime (2054,1,1);

@@ -5,6 +5,9 @@ import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'dart:developer' as devtools show log;
 
+//This class defines all the events that will trigger our bloc.
+// An event triggers the bloc -> the state changes -> the UI changes accordingly
+
 class AuthBloc extends Bloc<AuthEvent, AuthState>{
   AuthBloc(AuthProvider provider): super(const AuthStateUninitialized(isLoading: true)){
     
@@ -19,7 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       if(user == null){ //there is no user logged in
         emit(const AuthStateLoggedOut(isLoading: false, exception: null));
 
-      } else{
+      } else{ // a user is logged in
         emit(AuthStateLoggedIn(
           isLoading: false,
           user: user,
@@ -55,11 +58,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
           devtools.log("Inside the login event: The email of the user is not verified");
           emit(const AuthStateNeedsEmailVerification(isLoading: false)); //the email has already been sent at the creation of the account. The user will be able to re-send the email if he wants to.
         }
-        else {
+        else { //the email of the user is already verified
           emit(AuthStateLoggedIn(isLoading: false, user: user, exception: null));
         }
 
-      } on InvalidEmailAuthException { //episode 2
+      } on InvalidEmailAuthException { 
         
         emit(const AuthStateLoggedOut(isLoading: true, exception:null,loadingText: "The email is not valid."));
         await Future.delayed(const Duration(seconds: 2));

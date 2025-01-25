@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/services/cloud/cloud_note_exceptions.dart';
+
+//These are all the functions used to handle the notes.
 
 class FirebaseCloudStorage {
 
@@ -19,7 +19,6 @@ class FirebaseCloudStorage {
 
   //function to create a note
   Future<CloudNote> createNewNote({required String ownerUserId}) async {
-    devtools.log('create new note called :dddd');
     final currentDate = DateTime.now();
     devtools.log("We are creating a new note, show me the date: $currentDate");
     try{

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
@@ -8,6 +7,8 @@ import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'package:rappellemoi/utilities/dialogs/error_dialog.dart';
+
+// This class handles the login page
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

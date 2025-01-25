@@ -1,16 +1,20 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rappellemoi/helpers/loading/loading_screen_controller.dart';
 import 'dart:developer' as devtools show log;
+
+
+//This class handles the loading screen.
+// When operations are happening in the background, we need to display a small message
+//to the user so he knows that an operation is currently happening and he should wait.
+
 
 class LoadingScreen {
 
   // create a singleton
   factory LoadingScreen() => _shared; //the private constructor always returns the _shared instance.
   static final LoadingScreen _shared = LoadingScreen._sharedInstance(); //since the _shared instance is a final, it iniatialized once and cannot be changed after that. static so it is attached to the class and not an instance of the class
-  LoadingScreen._sharedInstance();  //private constructor that will create shared (doing nothing in particular but we could have has added logic inside of this constructor)
+  LoadingScreen._sharedInstance();  //private constructor that will create shared (doing nothing in particular but we could have added logic inside of this constructor)
 
   // loading screen controller
   LoadingScreenController? controller;
@@ -21,9 +25,8 @@ class LoadingScreen {
     }){
     //we have to check if the controller has been initialized before or not, not only if it is null. If we can update the controller, it means it is existent
     if(controller?.update(text) ?? false ){
-      devtools.log("Yep, the controller is null");
       return;
-    } else { //well, there is no controller so we need one
+    } else { //there is no controller so we need one
       controller = showOverlay(
         context,
         text
