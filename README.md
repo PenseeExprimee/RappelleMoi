@@ -2,9 +2,10 @@
 
 Allows users to create notifications to ensure they remember tasks that need to be completed at a specific time.
 
-![Loading screen](readMeImages/loadingScreenReadMe.png "App Loading Screen")
-![Login screen](readMeImages/loginScreenReadMe.png "App Login Screen")
-![Notes](readMeImages/noteScreenReadMe.png "App Note Screen")
+
+<div style="display: flex; justify-content: space-around; align-items: center;">
+  <img src="readMeImages/readMeImages.png" alt="Alt text" style="width: 3000px; margin: 10px;">
+</div>
 
 
 ## Getting Started
