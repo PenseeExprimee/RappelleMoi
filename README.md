@@ -2,9 +2,9 @@
 
 Allows users to create notifications to ensure they remember tasks that need to be completed at a specific time.
 
-![Loading screen](readMeImages/loadingScreenreadMe.png "App Loading Screen")
-![Login screen](readMeImages/loginScreenreadMe.png "App Login Screen")
-![Notes](readMeImages/noteScreenreadMe.png "App Note Screen")
+![Loading screen](readMeImages/loadingScreenReadMe.png "App Loading Screen")
+![Login screen](readMeImages/loginScreenReadMe.png "App Login Screen")
+![Notes](readMeImages/noteScreenReadMe.png "App Note Screen")
 
 
 ## Getting Started
