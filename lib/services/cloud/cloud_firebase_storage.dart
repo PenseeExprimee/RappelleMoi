@@ -83,25 +83,16 @@ class FirebaseCloudStorage {
   }
 
   //build a stream of notes for a specific user
-  Stream<Iterable<CloudNote>> allNotes({required ownerUserId}) =>
-    notesCollection.snapshots().map((event) => event.docs
-    .map((doc) => CloudNote.fromSnapshot(doc))
-    .where((note)=> note.userId == ownerUserId)
-    );
+  //Filter the notes before reading them so we do not retrieve all notes in the database
+  Stream<Iterable<CloudNote>> allNotes({required ownerUserId}){
+    final allNotes = notesCollection
+    .where('user_id', isEqualTo: ownerUserId).
+    snapshots()
+    .map((event) => event.docs
+    .map((doc) => CloudNote.fromSnapshot(doc)));
 
-  //get notes
-  Future<Iterable<CloudNote>> getNotes({required ownerUserId}) async {
-    
-    try{
-      return await notesCollection.where(
-        'user_id',
-        isEqualTo: ownerUserId
-      ).get()
-      .then((value) => value.docs.map((doc) => CloudNote.fromSnapshot(doc)));
-    } catch(e){
-      devtools.log('An error appeared when you tried to get the notes: $e');
-      throw CouldNotGetAllNotes();
-    }
+    return allNotes;
   }
+
 
 }
