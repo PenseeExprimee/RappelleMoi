@@ -21,9 +21,8 @@ class FirebaseAuthProvider implements AuthProvider {
 
     if(user != null){
       return AuthUser.fromFirebase(user);
-    } else{
-      return null;
     }
+      return null;
   }
 
   @override
@@ -42,9 +41,10 @@ class FirebaseAuthProvider implements AuthProvider {
 
         if(user !=null){
           return user;
-        } else {
-          throw UserNotLoggedInAuthException();
-        }
+        } 
+        
+        throw UserNotLoggedInAuthException();
+      
       } on FirebaseAuthException catch (e){
           if(e.code == 'invalid-email'){
             devtools.log("Invalid-email");
@@ -86,10 +86,10 @@ class FirebaseAuthProvider implements AuthProvider {
       final user = currentUser;
       if(user!= null){
         return user; //my getter already transforms the Firebase user into a Auth user
-      } else {
-        devtools.log("For some reason the user is null");
-        throw GenericAuthException();
-      }
+      } 
+      devtools.log("For some reason the user is null");
+      throw GenericAuthException();
+      
     } on FirebaseAuthException catch (e) {
       devtools.log(e.code);
       if(e.code == 'invalid-credential'){
