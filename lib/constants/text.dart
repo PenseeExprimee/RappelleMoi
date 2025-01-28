@@ -1,0 +1,1 @@
+const compteExitant = "Si un compte lié à cette adresse mail existe, un lien de réinitialisation vous a été envoyé.";

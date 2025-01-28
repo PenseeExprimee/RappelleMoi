@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rappellemoi/constants/text.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
@@ -39,15 +40,21 @@ class _ForgottenPasswordViewState extends State<ForgottenPasswordView> {
       listener: (context, state) async {
         devtools.log("Current state: $state");
        if(state is AuthStateForgottenPassword){
+        devtools.log("yep this is the state");
+
+        //Exceptions handle
           if(state.exception is FailResetPasswordException){
-            await showErrorDialog(context, "Please enter an email.");
+            await showErrorDialog(context, "Veuillez entrer une adresse email.");
           }
           else if(state.exception is InvalidEmailForResetException){
-            await showErrorDialog(context, "Please enter a valid email.");
+            await showErrorDialog(context, "Veuillez entrer une adresse mail valide.");
           }
-          else{
-            await showInfoDialog(context, "If an account with this email exists, a reset email has been sent.");
-          }
+
+        //Info to display to the user
+          if(state.message == compteExitant){
+            devtools.log("info displayed to the user: $compteExitant");
+            await showInfoDialog(context, compteExitant);
+          }  
         }
       },
       child: Scaffold(

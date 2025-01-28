@@ -3,6 +3,7 @@ import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/bloc/auth_state.dart';
+import 'package:rappellemoi/constants/text.dart';
 import 'dart:developer' as devtools show log;
 
 //This class defines all the events that will trigger our bloc.
@@ -129,10 +130,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         emit(const AuthStateNeedsEmailVerification(isLoading: false));
 
       } on InvalidEmailAuthException catch (e) {
+
         devtools.log("In auth event registering, invalid email $e");
-        
+        emit(AuthStateLoggedOut(isLoading: false, exception: e));
+
       } on WeakPasswordAuthException catch (e){
+
         devtools.log("In auth event registering, weak password: $e");
+        emit(AuthStateLoggedOut(isLoading: false, exception: e));
+
+      } on EmailAlreadyInUseAuthException catch(e){
+        
+        devtools.log("The email is already in use :c :$e");
+        emit(AuthStateLoggedOut(isLoading: false, exception: e));
       }
     });
   
@@ -155,7 +165,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         emit(const AuthStateForgottenPassword(isLoading: false, exception: null));
 
       } on ForgottenPasswordException catch(e){
-        devtools.log("Forgotten password exception occured: $e");
+        devtools.log("Could not change the page: $e");
       }
     });
 
@@ -164,7 +174,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       try {
         await provider.sendResetEmail(email: event.email);
         devtools.log('Do i see this one?');
-        emit(const AuthStateForgottenPassword(isLoading: false, exception: null));
+        emit(const AuthStateForgottenPassword(isLoading: false, exception: null, message: compteExitant));
         devtools.log('Auth state emitted');
       
       } on FailResetPasswordException catch (e){

@@ -55,7 +55,7 @@ class FirebaseAuthProvider implements AuthProvider {
             throw WeakPasswordAuthException();
           }
           else if (e.code == "email-already-in-use"){
-            devtools.log("The email is already in user");
+            devtools.log("The email is already in use");
             throw EmailAlreadyInUseAuthException();
           }
           else{
@@ -126,6 +126,7 @@ class FirebaseAuthProvider implements AuthProvider {
 
   @override
   Future<void> sendEmailVerification() async {
+    try{
     // get the current user. Here, I can't use my getter because I will need a method that my AuthUser does not have.
     final user = FirebaseAuth.instance.currentUser;
     // This function should only be responsible of sending the verification email,
@@ -136,6 +137,9 @@ class FirebaseAuthProvider implements AuthProvider {
       devtools.log("I sent the verification email;");
     } else {
       throw UserNotLoggedInAuthException();
+    }
+    } catch (e){
+      devtools.log('somethin happened with the email: $e');
     }
   }
 
@@ -189,15 +193,12 @@ class FirebaseAuthProvider implements AuthProvider {
         
         //Get the notes of the user
         final QuerySnapshot allCurrentUserNotes = await FirebaseFirestore.instance.collection('notes').where("user_id", isEqualTo: currentUser.uid).get();
+        devtools.log("All current user notes: ${allCurrentUserNotes.toString()}");
         for (QueryDocumentSnapshot doc in allCurrentUserNotes.docs) {
+          devtools.log("Docs to be deleted: ${doc.toString()}");
           await doc.reference.delete();
         }
         devtools.log("All notes of the user deleted");
-
-        //Delete the notes of the user
-        await FirebaseFirestore.instance.collection('notes').doc(currentUser.uid).delete();
-        devtools.log("Notes of the user deleted from the database");
-
         //Cancel all scheduled notification
         await FlutterLocalNotificationsPlugin().cancelAll();
 

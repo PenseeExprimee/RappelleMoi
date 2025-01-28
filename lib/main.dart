@@ -18,6 +18,7 @@ import 'package:rappellemoi/views/notes/notes_view.dart';
 import 'package:rappellemoi/views/register_view.dart';
 import 'package:rappellemoi/views/verification_email_view.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'dart:developer' as devtools show log;
 
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -94,7 +95,9 @@ class HomePage extends StatelessWidget {
           return const ForgottenPasswordView();
         }
         else {
+          devtools.log("Are we stuck here?");
           return const Scaffold(
+            
             body: CircularProgressIndicator()
           );
         }

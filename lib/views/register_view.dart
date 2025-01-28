@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'dart:developer' as devtools show log;
@@ -143,7 +144,14 @@ class _RegisterViewState extends State<RegisterView> {
             child: const Text('Déjà un compte? Connectez vous en cliquant ici :D')
           ),
           TextButton(
-            onPressed:() {},
+            onPressed:() {
+              devtools.log('The user clicked on forgotten password');
+                  //Event Forgotten password
+                  context
+                      .read<AuthBloc>()
+                      .add(AuthEventForgottenPassword(email: _email.text));
+                  devtools.log('Password sent, check your email');
+            },
             child: const Text('Mot de passe oublié')
           )
         ],

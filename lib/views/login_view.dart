@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/bloc/auth_bloc.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
@@ -50,7 +51,17 @@ class _LoginViewState extends State<LoginView> {
       listener: (context, state) async {
         if(state is AuthStateLoggedOut){
           if(state.exception is FailResetPasswordException){
-            await showErrorDialog(context, "Please enter a valid email.");
+            await showErrorDialog(context, "Le changement de mot de passe n'a pas pu aboutir.");
+          }
+          else if(state.exception is EmailAlreadyInUseAuthException){
+            await showErrorDialog(context, "Il existe déjà un compte avec cette adresse mail.");
+
+          }
+          else if (state.exception is InvalidEmailAuthException){
+            await showErrorDialog(context, "L'email est non valide.");
+          }
+          else if (state.exception is WeakPasswordAuthException){
+            await showErrorDialog(context, "Le mot de passe est trop faible.");
           }
         }
       },

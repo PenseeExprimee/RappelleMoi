@@ -122,6 +122,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       devtools.log("Datetime parse: ${DateTime.parse(parsedDate.toString())}");
 
       //Create the notification here
+      devtools.log("Id of the current note: ${currentNote.noteId}");
       NotificationService.scheduleNotification(
               title: 'Rappelle moi :D',
               body: _textController.text,
