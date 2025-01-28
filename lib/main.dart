@@ -17,6 +17,7 @@ import 'package:rappellemoi/views/notes/create_or_update_view.dart';
 import 'package:rappellemoi/views/notes/notes_view.dart';
 import 'package:rappellemoi/views/register_view.dart';
 import 'package:rappellemoi/views/verification_email_view.dart';
+import 'package:rappellemoi/views/view_my_profile.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'dart:developer' as devtools show log;
 
@@ -51,6 +52,7 @@ void main() async {
       showNotificationRoute: (context) => const ClickOnNotificationView(),
       notesViewRoute: (context) => const NotesView(),
       forgottenPasswordRoute: (context) => const ForgottenPasswordView(),
+      viewMyProfile: (context) => const MyProfileview(),
     }
   ));
 }

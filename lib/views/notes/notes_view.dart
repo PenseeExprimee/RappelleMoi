@@ -62,7 +62,18 @@ class _NotesViewState extends State<NotesView> {
                   icon: const Icon(Icons.add)),
               PopupMenuButton<MenuAction>(
                 itemBuilder: (context) {
-                  return [
+                  return [const PopupMenuItem<MenuAction>(
+                      value: MenuAction.viewProfile,
+                      child: Row(
+                        children: [
+                          Icon(Icons.people_rounded),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Voir mon profil')
+                        ],
+                      ),
+                    ),
                     const PopupMenuItem<MenuAction>(
                       value: MenuAction.logout,
                       child: Row(
@@ -91,6 +102,9 @@ class _NotesViewState extends State<NotesView> {
                 },
                 onSelected: (action) async {
                   switch (action) {
+                    case MenuAction.viewProfile:
+                      devtools.log("The user wants to see his profile");
+                      Navigator.of(context).pushNamed(viewMyProfile);
                     case MenuAction.logout:
                       //send an event to the bloc to logout
                       devtools.log('Button logout pressed');

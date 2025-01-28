@@ -1,1 +1,1 @@
-enum MenuAction{logout, deleteAccount}
+enum MenuAction{logout, deleteAccount, viewProfile}
