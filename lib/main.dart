@@ -15,11 +15,9 @@ import 'package:rappellemoi/views/login_view.dart';
 import 'package:rappellemoi/views/notes/click_on_notification.dart';
 import 'package:rappellemoi/views/notes/create_or_update_view.dart';
 import 'package:rappellemoi/views/notes/notes_view.dart';
-
 import 'package:rappellemoi/views/register_view.dart';
 import 'package:rappellemoi/views/verification_email_view.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'dart:developer' as devtools show log;
 
 
 final navigatorKey = GlobalKey<NavigatorState>();

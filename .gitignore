@@ -45,3 +45,8 @@ app.*.map.json
 #Other
 ./lib/firebase_options.dart
 .env
+
+#Flutter connection strings
+
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
