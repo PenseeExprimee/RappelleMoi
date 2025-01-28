@@ -36,7 +36,8 @@ class AuthStateRegistering extends AuthState {
 
 class AuthStateNeedsEmailVerification extends AuthState {
   // ignore: use_super_parameters
-  const AuthStateNeedsEmailVerification({required isLoading}) : super(isLoading: isLoading);
+  final Exception? exception;
+  const AuthStateNeedsEmailVerification({required isLoading, this.exception}) : super(isLoading: isLoading);
 }
 
 class AuthStateForgottenPassword extends AuthState {

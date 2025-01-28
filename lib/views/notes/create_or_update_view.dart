@@ -220,6 +220,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
                     TextField(
                       controller: _textController,
                       keyboardType: TextInputType.multiline,
+                      maxLength: 100,
                       maxLines: null, //the text space expands when the user is typing
                       decoration: const InputDecoration(
                         hintText: 'Enter your note...',

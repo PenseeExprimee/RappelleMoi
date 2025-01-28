@@ -1,1 +1,2 @@
 const compteExitant = "Si un compte lié à cette adresse mail existe, un lien de réinitialisation vous a été envoyé.";
+const tooManyRequests = "Oula! Il ne faut pas s'acharner sur le bouton comme ça...Attendez 2 minutes puis recommencez.";

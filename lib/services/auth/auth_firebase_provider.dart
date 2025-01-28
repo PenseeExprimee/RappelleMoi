@@ -133,14 +133,27 @@ class FirebaseAuthProvider implements AuthProvider {
     // not the logic "does this user need to receive the verification email". Because the user should not end on that page if he does not need to verify its email.
     
     if(user != null){
-      user.sendEmailVerification();
+      await user.sendEmailVerification();
       devtools.log("I sent the verification email;");
     } else {
       throw UserNotLoggedInAuthException();
     }
-    } catch (e){
-      devtools.log('somethin happened with the email: $e');
-    }
+    } on FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case 'too-many-requests':
+            throw TooManyRequestAuthException();
+          case 'user-token-expired':
+            throw UserTokenExpiredAuthException();
+          case 'user-disabled':
+            throw UserDisabledAuthException();
+          case 'network-request-failed':
+            throw NetworkRequestFailed();
+          default:
+            throw GenericAuthException();
+        }
+  } catch (e){
+    devtools.log("An exception occcured: $e");
+  }
   }
 
   @override

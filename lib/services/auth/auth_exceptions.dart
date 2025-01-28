@@ -19,3 +19,11 @@ class FailResetPasswordException implements Exception {}
 class InvalidEmailForResetException implements Exception {}
 
 class CouldNotDeleteTheAccountException implements Exception {}
+
+class TooManyRequestAuthException implements Exception {}
+
+class UserTokenExpiredAuthException implements Exception {}
+
+class UserDisabledAuthException implements Exception {}
+
+class NetworkRequestFailed implements Exception {}

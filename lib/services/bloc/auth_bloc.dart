@@ -156,6 +156,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       } on UserNotLoggedInAuthException catch (e) {
         devtools.log("The verification email could not be used because there is no current user: $e");
         
+      } on TooManyRequestAuthException catch(e) {
+        devtools.log("The user did too many requests of verification email");
+        emit(AuthStateNeedsEmailVerification(isLoading: false,exception: e));
+      } catch(e){
+        devtools.log("An error occured: $e");
       }
     },);
 
