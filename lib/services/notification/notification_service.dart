@@ -66,7 +66,6 @@ class NotificationService {
       String? body,
       String? payLoad,
       required DateTime scheduledNotificationDateTime}) async {
-        devtools.log("Schedule Datetime: $scheduledNotificationDateTime");
         devtools.log("Schedule time TZDateTime: ${tz.TZDateTime.from(
           scheduledNotificationDateTime,
           tz.getLocation('Europe/Paris'),

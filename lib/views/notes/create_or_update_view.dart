@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rappellemoi/generics/get_arguments.dart';
+import 'package:rappellemoi/services/crud/notification.dart';
 import 'package:rappellemoi/services/notification/notification_service.dart';
 import 'package:rappellemoi/services/auth/auth_service.dart';
 import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
@@ -21,9 +22,13 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
   CloudNote? _note;
   DateTime? _date; 
+  DatabaseNote? _localNote;
   late final TextEditingController _textController;
   late final TextEditingController _dateTimeController;
   late final FirebaseCloudStorage _notesService;
+  late final LocalNotesService _localNotesService;
+  late final DatabaseUser _localUser;
+  
 
   var flag = 0;
 
@@ -32,10 +37,21 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     _notesService = FirebaseCloudStorage(); //always the same because we created a singleton
     _textController = TextEditingController();
     _dateTimeController = TextEditingController();
+    _localNotesService = LocalNotesService();
     super.initState();
   }
 
   Future <CloudNote> createOrGetExistingNote(BuildContext context) async {
+
+    //UPDATE IN THE LOCAL DATABASE WITH THE USER
+    final currentUser = AuthService.firebase().currentUser!;
+    final currentUserEmail = currentUser.email;
+    final currentUserId = currentUser.id;
+    devtools.log("Current user email: $currentUserEmail");
+    devtools.log("Current user id: $currentUserId");
+    _localUser = await _localNotesService.getOrCreateUser(email: currentUserEmail, authUserId: currentUserId);
+    //verif create a new user in the local database
+    devtools.log("In the create or get existing note, this is the user in your local database: ${_localUser.authUserId}");
 
     //If the user clicked on "re-schedule", he can update the note
     if((ModalRoute.of(context)!.settings.arguments) != null){
@@ -45,11 +61,15 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     //Grab an existing note if there is one
     final existingNote = context.getArgument<CloudNote>();
     if (existingNote != null){
-      devtools.log("there is an existing note");
+      devtools.log("In the create or get existing note, THERE IS AN EXISTING NOTE");
       _note = existingNote;
       _textController.text = existingNote.text;
-      
-
+      devtools.log("In the create or get existing note, get the note from the local database");
+      devtools.log("In the create or get existing note, This is the existing note id: ${existingNote.noteId}");
+      var allNotesShow = await _localNotesService.getAllNotes();
+      _localNote = await _localNotesService.getNote(id: existingNote.noteId);
+      devtools.log("In the create or gete existing note, local note: $_localNote");
+      devtools.log("Get or create existing note, value of the flag: $flag");
       if(flag == 1 ){ //we just called selected date
         devtools.log(_dateTimeController.text);
         await _notesService.updateNoteTime(noteId: existingNote.noteId, notificationDate: DateTime.parse(_dateTimeController.text));
@@ -58,10 +78,9 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
     
       } else{
         _date = existingNote.notificationDate;
+        devtools.log("In the create or get existing note, value of the date: $_date");
         if(_date != null){
-          devtools.log(_date.toString());
           var finalDate = DateFormat('d MMMM yyyy HH:mm').format(_date!);
-          devtools.log(finalDate);
           _dateTimeController.text = finalDate;
           return existingNote;
         }
@@ -69,19 +88,27 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
         var splitTime = '${_date.toString().split(" ")[0]} ${_date.toString().split(" ")[1].substring(0,5)}';
         _dateTimeController.text = splitTime;
         return existingNote;
-    }
       }
+    }
 
     //in case there is no note in the current stack, check of there is something in note
     final actualNote = _note;
     if(actualNote != null){
+        devtools.log("Calling to get Note 1");
+       _localNote = await _localNotesService.getNote(id: actualNote.noteId);
       return actualNote;
     }
 
     //Get the id of the currentUser before calling createNewNote
-    final currentUser = AuthService.firebase().currentUser!;
     final currentId = currentUser.id;
     final newNote = await _notesService.createNewNote(ownerUserId: currentId);
+    devtools.log('This is the id of the note in the cloud: ${newNote.noteId}');
+    //Create the note in the local database
+    devtools.log("Local user: $_localUser");
+    _localNote = await _localNotesService.createNote(owner: _localUser, cloudNoteId: newNote.noteId);
+    devtools.log("Note in the local database: $_localNote");
+    devtools.log("Local note ID: ${_localNote!.cloudNoteId}");
+    
     _note = newNote;
     devtools.log("New note notification date: ${newNote.notificationDate}");
     _dateTimeController.text = changeDateFormatFromString(newNote.notificationDate!); //newNote.notificationDate.toString().split(" ")[0];
@@ -93,6 +120,13 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
 
     if(currentNote != null && _textController.text.isEmpty){ //the user clicked to add a note but did not enter anything in the text field
       _notesService.deleteNote(noteId: currentNote.noteId);
+
+      //We also delete the note from the local database (the notification has not been created yet so no worries)
+      _localNotesService.deleteNote(id: int.parse(currentNote.noteId));
+      //try to get the note after delete to see if it's here
+      devtools.log("Calling get note number 2");
+      _localNotesService.getNote(id: currentNote.noteId);
+
     }
   }
 
@@ -114,28 +148,47 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   void saveNoteIfTextNotEmpty() async { //the note get saved only if the text is not empty
     final currentNote = _note;
     if(currentNote !=null && _textController.text.isNotEmpty){
-      devtools.log("DateTime text: ${_dateTimeController.text}");
       
-
       //Parse the string into a datetime object
       var parsedDate = changeDateFormat(_dateTimeController.text);
       devtools.log("Datetime parse: ${DateTime.parse(parsedDate.toString())}");
 
       //Create the notification here
       devtools.log("Id of the current note: ${currentNote.noteId}");
+      devtools.log("Local note id: ${_localNote}");
       NotificationService.scheduleNotification(
+              id: _localNote!.id ,
               title: 'Rappelle moi :D',
               body: _textController.text,
               scheduledNotificationDateTime: parsedDate,
               payLoad: currentNote.noteId,
               );
-      
-      //Update the note
+      devtools.log("Save not if text not empty, after schecule notification");
+
+      //UPDATE THE NOTE IN THE FIREBASE DATABASE
       await _notesService.updateNote(
         noteId: currentNote.noteId, 
         text: _textController.text,
         notificationDate: parsedDate
       );
+      devtools.log("Save not if text not empty, after updating the the firebase note");
+      //Update the local note with the content of the firebase note
+      devtools.log("Save note function, text in the note: ${_textController.text}");
+      await _localNotesService.updateNote(note: _localNote!, text: _textController.text, date: parsedDate);
+      
+      _localNote = await _localNotesService.getNote(id: currentNote.noteId);
+      devtools.log("Local note after updating the note: ${_localNote!.date}");
+      //Create the notification in the local database
+      await _localNotesService.createNotification(localNote: _localNote!);
+      devtools.log("Save not if text not empty, after creating a notification");
+      
+      //verif get the note
+      var idLocalNote = _localNote!.cloudNoteId;
+      devtools.log("Save note function, id local note: $idLocalNote");
+      devtools.log("Calling get note function number 3");
+      final notesAllShow = await _localNotesService.getAllNotes();
+
+
     }
   }
 
@@ -263,7 +316,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   }
   
   Future <void> _selectedDate() async {
-    devtools.log(_dateTimeController.text);
+    devtools.log("Date time controller log :${_dateTimeController.text}");
     DateTime? _picked = await DatePicker.showDateTimePicker(
     context,
     showTitleActions: true,

@@ -1,7 +1,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_user.dart';
 
 @immutable

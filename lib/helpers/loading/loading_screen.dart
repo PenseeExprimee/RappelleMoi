@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rappellemoi/helpers/loading/loading_screen_controller.dart';
-import 'dart:developer' as devtools show log;
 
 
 //This class handles the loading screen.
