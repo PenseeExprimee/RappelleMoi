@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rappellemoi/extensions/filter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -297,7 +298,7 @@ class LocalNotesService {
     }
   }
 
-  Future <void> createNotification({required DatabaseNote localNote}) async {
+  Future <int> createNotification({required DatabaseNote localNote}) async {
     devtools.log("inside the create notification function");
     try{
       await _ensureDbIsOpen();
@@ -313,19 +314,20 @@ class LocalNotesService {
       
       if(notifications.isEmpty){
         //The notification does not exist yet, needs to be created
-          final noteId = await db.insert(notificationTable,{
+          final notificationId = await db.insert(notificationTable,{
             noteIdColumn: localNote.cloudNoteId,
             dateColumn: localNote.date.toString(),
           });
 
           //verify the notification just created
           final results = await db.query(
-          notificationTable,
-          limit: 1,
-          where : 'id =?',
-          whereArgs: [noteId],
-        );
-        devtools.log("This is the notification that has just been created: $results");
+            notificationTable,
+            limit: 1,
+            where : 'id =?',
+            whereArgs: [notificationId],
+          );
+          devtools.log("This is the notification that has just been created: ${results}");
+          return notificationId;
       } else {
         //The notification exits and needs to be updated
         devtools.log("Create notification: Update the existing notification");
@@ -338,6 +340,15 @@ class LocalNotesService {
           whereArgs: [localNote.cloudNoteId],
         );
         devtools.log("Create notification: number of updates: $updatesCount");
+        //verify the notification just created
+        final results = await db.query(
+          notificationTable,
+          limit: 1,
+          where : 'id =?',
+          whereArgs: [localNote.cloudNoteId],
+        );
+        return Future.value(results[0]["id"] as int);
+        
       }
       
 
@@ -347,19 +358,45 @@ class LocalNotesService {
     }
   }
   
-  Future <void> deleteNote({required int id}) async {
+  Future <void> deleteNote({required String? cloudNoteid}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
           noteTable,
           where: 'cloud_note_id=?',
-          whereArgs: [id]
+          whereArgs: [cloudNoteid]
     );
     if(deletedCount == 0){
       throw CouldNotDeleteNote();
     } else {
-      _notes.removeWhere((note) => note.cloudNoteId == id); //we remove from the cache the notes(s) that have been deleted.
+      _notes.removeWhere((note) => note.cloudNoteId == cloudNoteid); //we remove from the cache the notes(s) that have been deleted.
       _notesStreamController.add(_notes);
+    }
+  }
+
+  Future <void> deleteNotification({required String? id}) async {
+    devtools.log("Inside delete notification function");
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    //Get the notification from the database
+    final results = await db.query(
+      notificationTable,
+      where: 'note_id=?',
+      whereArgs: [id]
+    );
+    //Get the id of the notification
+    final notificationId = await Future.value(results[0]["id"] as int);
+    //Unschedule the notification
+    await FlutterLocalNotificationsPlugin().cancel(notificationId);
+    
+    final deletedCount = await db.delete(
+          notificationTable,
+          where: 'note_id=?',
+          whereArgs: [id]
+    );
+    devtools.log("How many notification got deleted? $deletedCount");
+    if(deletedCount == 0){
+      throw CouldNoteDeleteNotification();
     }
   }
 
@@ -420,6 +457,13 @@ class LocalNotesService {
       devtools.log("An error occured in getAllNotes function: $e");
       throw CouldNotGetAllNotes();
     }
+  }
+  Future <List<Map<String,Object?>>> getAllNotifications() async {
+    await _ensureDbIsOpen();
+    final db = _getDatabaseOrThrow();
+    final notification = await db.query(notificationTable);
+
+    return notification;
   }
 
   Future <DatabaseNote> updateNote({

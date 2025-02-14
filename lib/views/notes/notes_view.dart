@@ -11,6 +11,7 @@ import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:rappellemoi/services/cloud/cloud_note.dart';
+import 'package:rappellemoi/services/crud/notification.dart';
 import 'package:rappellemoi/utilities/dialogs/choice_dialog.dart';
 import 'package:rappellemoi/utilities/dialogs/error_dialog.dart';
 import 'package:rappellemoi/utilities/dialogs/field_dialog_test.dart';
@@ -28,11 +29,13 @@ class NotesView extends StatefulWidget {
 class _NotesViewState extends State<NotesView> {
   //declaration of the notes services
   late final FirebaseCloudStorage _notesService;
+  late final LocalNotesService _localNotesService;
 
   @override
   void initState() {
     //initialize our service
     _notesService = FirebaseCloudStorage();
+    _localNotesService = LocalNotesService();
     super.initState();
   }
 
@@ -160,6 +163,9 @@ class _NotesViewState extends State<NotesView> {
                         onDelete: (note) {
                           devtools.log("Delete a note");
                           _notesService.deleteNote(noteId: note.noteId);
+                          _localNotesService.deleteNote(cloudNoteid: note.noteId);
+                          _localNotesService.deleteNotification(id: note.noteId);
+                          _localNotesService.getAllNotes();
                         });
                   } else {
                     return const CircularProgressIndicator();

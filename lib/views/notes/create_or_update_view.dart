@@ -122,10 +122,11 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       _notesService.deleteNote(noteId: currentNote.noteId);
 
       //We also delete the note from the local database (the notification has not been created yet so no worries)
-      _localNotesService.deleteNote(id: int.parse(currentNote.noteId));
+      devtools.log("Let's try to delete the local note");
+      _localNotesService.deleteNote(cloudNoteid: currentNote.noteId);
       //try to get the note after delete to see if it's here
       devtools.log("Calling get note number 2");
-      _localNotesService.getNote(id: currentNote.noteId);
+      _localNotesService.getAllNotes();
 
     }
   }
@@ -153,17 +154,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       var parsedDate = changeDateFormat(_dateTimeController.text);
       devtools.log("Datetime parse: ${DateTime.parse(parsedDate.toString())}");
 
-      //Create the notification here
-      devtools.log("Id of the current note: ${currentNote.noteId}");
-      devtools.log("Local note id: ${_localNote}");
-      NotificationService.scheduleNotification(
-              id: _localNote!.id ,
-              title: 'Rappelle moi :D',
-              body: _textController.text,
-              scheduledNotificationDateTime: parsedDate,
-              payLoad: currentNote.noteId,
-              );
-      devtools.log("Save not if text not empty, after schecule notification");
 
       //UPDATE THE NOTE IN THE FIREBASE DATABASE
       await _notesService.updateNote(
@@ -179,8 +169,20 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
       _localNote = await _localNotesService.getNote(id: currentNote.noteId);
       devtools.log("Local note after updating the note: ${_localNote!.date}");
       //Create the notification in the local database
-      await _localNotesService.createNotification(localNote: _localNote!);
+      final idNotification = await _localNotesService.createNotification(localNote: _localNote!);
       devtools.log("Save not if text not empty, after creating a notification");
+
+      //Create the notification here
+      devtools.log("Id of the current note: ${currentNote.noteId}");
+      devtools.log("Local note id: ${_localNote}");
+      NotificationService.scheduleNotification(
+              id: idNotification ,
+              title: 'Rappelle moi :D',
+              body: _textController.text,
+              scheduledNotificationDateTime: parsedDate,
+              payLoad: currentNote.noteId,
+              );
+      devtools.log("Save not if text not empty, after schecule notification");
       
       //verif get the note
       var idLocalNote = _localNote!.cloudNoteId;

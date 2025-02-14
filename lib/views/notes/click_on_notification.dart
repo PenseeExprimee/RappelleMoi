@@ -3,6 +3,7 @@ import 'package:rappellemoi/constants/routes.dart';
 import 'package:rappellemoi/services/cloud/cloud_firebase_storage.dart';
 import 'dart:convert';
 import 'package:rappellemoi/main.dart';
+import 'package:rappellemoi/services/crud/notification.dart';
 
 
 //This class defines the page that will be displayed  when the user clicks on the notification.
@@ -17,10 +18,12 @@ class ClickOnNotificationView extends StatefulWidget {
 class _ClickOnNotificationViewState extends State<ClickOnNotificationView> {
 
   late final FirebaseCloudStorage _notesService;
+  late final LocalNotesService _localNotesService;
 
   @override
   void initState() {
     _notesService = FirebaseCloudStorage();
+    _localNotesService = LocalNotesService();
     super.initState();
   }
   @override
@@ -83,6 +86,8 @@ class _ClickOnNotificationViewState extends State<ClickOnNotificationView> {
                           
                           //Delete the actual note
                            _notesService.deleteNote(noteId: noteId);
+                           _localNotesService.deleteNote(cloudNoteid: noteId);
+                           _localNotesService.deleteNotification(id: noteId);
 
                            //Go to the page to update the note
                            navigatorKey.currentState?.pushReplacementNamed(
@@ -113,6 +118,8 @@ class _ClickOnNotificationViewState extends State<ClickOnNotificationView> {
                         onPressed: () {
                           // Button action
                           _notesService.deleteNote(noteId: noteId);
+                          _localNotesService.deleteNotification(id: noteId);
+                          _localNotesService.deleteNote(cloudNoteid:noteId);
                           navigatorKey.currentState?.pop();
 
                         },

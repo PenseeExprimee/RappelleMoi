@@ -1,10 +1,15 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';
 import 'package:rappellemoi/services/bloc/auth_state.dart';
 import 'package:rappellemoi/constants/text.dart';
 import 'dart:developer' as devtools show log;
+
+import 'package:rappellemoi/services/crud/notification.dart';
+import 'package:rappellemoi/services/notification/notification_service.dart';
 
 //This class defines all the events that will trigger our bloc.
 // An event triggers the bloc -> the state changes -> the UI changes accordingly
@@ -60,6 +65,47 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
           emit(const AuthStateNeedsEmailVerification(isLoading: false)); //the email has already been sent at the creation of the account. The user will be able to re-send the email if he wants to.
         }
         else { //the email of the user is already verified
+          
+
+          //reschedule all notifications
+          //Start by getting the notes in the local database
+          final _localNotesService = LocalNotesService();
+          //Query all notifications
+          final allNotification = await _localNotesService.getAllNotifications();
+          final allNotes = await _localNotesService.getAllNotes();
+          
+          allNotification.forEach((element) async {
+            final notificationId = element["id"] as int;
+            final noteId = element["note_id"];
+
+            //Look for the right note
+            var note = DatabaseNote(id: 0, cloudNoteId: 'init', userId: 'initUserId', text: 'initTextId', date: 'InitDate');
+            allNotes.forEach((databaseNote){
+              if(databaseNote.cloudNoteId == noteId){
+                note = databaseNote;
+              }
+            });
+            devtools.log("This is the date login: ${note.date}");
+            DateTime now = DateTime.now();
+            DateTime parsedDate = DateTime.parse(note.date.trim());
+            if(parsedDate.isBefore(now)){
+              await NotificationService.showNotification(
+                  id: notificationId,
+                  title: 'Rappelle moi :D',
+                  body: note.text,
+              );
+      
+            }
+            else {
+              NotificationService.scheduleNotification(
+                id: notificationId,
+                title: 'Rappelle moi :D',
+                body: note.text,
+                scheduledNotificationDateTime: parsedDate,
+                payLoad: note.cloudNoteId,
+                );
+            }
+          });
           emit(AuthStateLoggedIn(isLoading: false, user: user, exception: null));
         }
 
@@ -96,6 +142,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
       );
       try {
         await provider.logout();
+        FlutterLocalNotificationsPlugin().cancelAll();
         emit(const AuthStateLoggedOut(
           isLoading: false,
           exception: null,
