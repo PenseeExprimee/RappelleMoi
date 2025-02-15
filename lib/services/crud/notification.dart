@@ -331,7 +331,7 @@ class LocalNotesService {
         final results = await db.query(
           notificationTable,
           limit: 1,
-          where : 'id =?',
+          where : 'note_id =?',
           whereArgs: [localNote.cloudNoteId],
         );
         return Future.value(results[0]["id"] as int);
@@ -341,7 +341,7 @@ class LocalNotesService {
 
     } catch (e){
       devtools.log("Error during the creation of the notification in local database: $e");
-      throw CouldNotCreateNote();
+      throw CouldNotCreateNotification();
     }
   }
   

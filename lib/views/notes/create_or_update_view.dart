@@ -269,7 +269,7 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
                       maxLength: 100,
                       maxLines: null, //the text space expands when the user is typing
                       decoration: const InputDecoration(
-                        hintText: 'Enter your note...',
+                        hintText: 'Entre ta note...',
                         prefixIcon: Icon(Icons.note_alt_sharp),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10.0))

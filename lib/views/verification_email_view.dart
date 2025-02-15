@@ -22,7 +22,7 @@ class VerifEmail extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Email verification"),
+          title: const Text("Vérification d'email."),
         ),
         body: Column(
           children: [
@@ -39,7 +39,7 @@ class VerifEmail extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                  " We've sent you a verification email.Please click on the link in the email to verify your account.If you haven't received the email, click on the button below."),
+                  "Nous vous avons envoyé un e-mail de vérification. Veuillez cliquer sur le lien contenu dans cet e-mail pour confirmer votre compte.Si vous ne l’avez pas reçu, cliquez sur le bouton ci-dessous pour le renvoyer"),
             ),
             const SizedBox(height: 50),
             TextButton(
@@ -64,7 +64,7 @@ class VerifEmail extends StatelessWidget {
                   children: [
                     Icon(Icons.mail),
                     SizedBox(width: 10),
-                    Text('Re-send the verification email')
+                    Text('Renvoyer le mail')
                   ],
                 )),
             const SizedBox(height: 10),
@@ -85,7 +85,7 @@ class VerifEmail extends StatelessWidget {
                   children: [
                     Icon(Icons.home),
                     SizedBox(width: 10),
-                    Text("Home page")
+                    Text("Page d'accueil")
                   ],
                 ))
           ],
