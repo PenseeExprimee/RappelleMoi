@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:intl/intl.dart';
 import 'package:rappellemoi/services/auth/auth_exceptions.dart';
 import 'package:rappellemoi/services/auth/auth_provider.dart';
 import 'package:rappellemoi/services/bloc/auth_event.dart';

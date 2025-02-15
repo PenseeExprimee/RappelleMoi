@@ -161,20 +161,14 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
         text: _textController.text,
         notificationDate: parsedDate
       );
-      devtools.log("Save not if text not empty, after updating the the firebase note");
       //Update the local note with the content of the firebase note
-      devtools.log("Save note function, text in the note: ${_textController.text}");
       await _localNotesService.updateNote(note: _localNote!, text: _textController.text, date: parsedDate);
       
       _localNote = await _localNotesService.getNote(id: currentNote.noteId);
-      devtools.log("Local note after updating the note: ${_localNote!.date}");
       //Create the notification in the local database
       final idNotification = await _localNotesService.createNotification(localNote: _localNote!);
-      devtools.log("Save not if text not empty, after creating a notification");
 
       //Create the notification here
-      devtools.log("Id of the current note: ${currentNote.noteId}");
-      devtools.log("Local note id: ${_localNote}");
       NotificationService.scheduleNotification(
               id: idNotification ,
               title: 'Rappelle moi :D',
@@ -182,12 +176,9 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
               scheduledNotificationDateTime: parsedDate,
               payLoad: currentNote.noteId,
               );
-      devtools.log("Save not if text not empty, after schecule notification");
       
       //verif get the note
       var idLocalNote = _localNote!.cloudNoteId;
-      devtools.log("Save note function, id local note: $idLocalNote");
-      devtools.log("Calling get note function number 3");
       final notesAllShow = await _localNotesService.getAllNotes();
 
 
@@ -318,7 +309,6 @@ class _CreateOrUpdateNotesViewState extends State<CreateOrUpdateNotesView> {
   }
   
   Future <void> _selectedDate() async {
-    devtools.log("Date time controller log :${_dateTimeController.text}");
     DateTime? _picked = await DatePicker.showDateTimePicker(
     context,
     showTitleActions: true,

@@ -63,9 +63,7 @@ class LocalNotesService {
 
     //first, try to get the user from the database.
     try{
-      devtools.log("Inside the get or create function, call to the get user fucntion");
       final user = await getUser(email: email);
-      devtools.log("In the get or create user function, After getting the user");
       if(setAsCurrentUser){
         _user = user;
       }
@@ -77,7 +75,6 @@ class LocalNotesService {
       if(setAsCurrentUser){
         _user = createdUser;
       }
-      devtools.log("In the get or create user function, return the created user");
       return createdUser;
     } catch (e){
         devtools.log("Error, in the get or create user function: $e");
@@ -128,7 +125,6 @@ class LocalNotesService {
 
     _notes = allNotes.toList();
     _notesStreamController.add(_notes);
-    devtools.log("Done with caching notes");
   }
 
   //we will store our database in here
@@ -231,7 +227,6 @@ class LocalNotesService {
 
   Future <DatabaseUser> getUser({required String email}) async {
     try{
-      devtools.log("Start the get user function");
       await _ensureDbIsOpen();
       final db =_getDatabaseOrThrow();
       final results = await db.query(
@@ -240,13 +235,10 @@ class LocalNotesService {
         where : 'email =?',
         whereArgs: [email.toLowerCase()],
       );
-      devtools.log("AAAAAAAA");
-      devtools.log("In the get user function}");
       //we need to make sure that the user exists
       if(results.isEmpty){
         throw CouldNotFindUserInDatabase();
       } else {
-        devtools.log("In the get user function, return the user: ${results.first}");
         return DatabaseUser.fromRow(results.first); //first row that was read from the user table
       }
     } catch (e){
@@ -259,12 +251,10 @@ class LocalNotesService {
   Future <DatabaseNote> createNote({required DatabaseUser owner, required String cloudNoteId}) async {
       
     try{
-      devtools.log("In the create note function");
       await _ensureDbIsOpen();
       final db = _getDatabaseOrThrow();
 
       //make sure that the user exists in the database
-      devtools.log("Inside the create note function, call to the get user function");
       final dbUser = await getUser(email: owner.email);
       //make sure that the id of the provided database owner actually exists in the database (so they have the same email and the same id)
       if(dbUser != owner){
@@ -299,7 +289,6 @@ class LocalNotesService {
   }
 
   Future <int> createNotification({required DatabaseNote localNote}) async {
-    devtools.log("inside the create notification function");
     try{
       await _ensureDbIsOpen();
       final db = _getDatabaseOrThrow();
@@ -326,11 +315,9 @@ class LocalNotesService {
             where : 'id =?',
             whereArgs: [notificationId],
           );
-          devtools.log("This is the notification that has just been created: ${results}");
           return notificationId;
       } else {
         //The notification exits and needs to be updated
-        devtools.log("Create notification: Update the existing notification");
         //update DB
         final updatesCount = await db.update(
           notificationTable, {
@@ -375,7 +362,6 @@ class LocalNotesService {
   }
 
   Future <void> deleteNotification({required String? id}) async {
-    devtools.log("Inside delete notification function");
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     //Get the notification from the database
@@ -412,7 +398,6 @@ class LocalNotesService {
 
   //retrieve a specific note
   Future <DatabaseNote> getNote({required String id}) async{
-    devtools.log("Inside the get note function");
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(
@@ -423,9 +408,7 @@ class LocalNotesService {
     );
 
     if(notes.isEmpty){
-      devtools.log("Inside get note function, Could not find the note to update :Ddddd");
       var noteTableState = await getAllNotes();
-      devtools.log("Inside get note function, Current note table: ${noteTableState.toString()}");
       throw CouldNotFindNote();
     } else {
       final note = DatabaseNote.fromRow(notes.first);
@@ -443,15 +426,10 @@ class LocalNotesService {
   //get all the notes for the given user
   Future <Iterable<DatabaseNote>> getAllNotes() async {
     try {
-      devtools.log("Inside get all notes");
       await _ensureDbIsOpen();
       final db = _getDatabaseOrThrow();
-      devtools.log("Inside get all notes, database open ok");
       final notes = await db.query(noteTable);
       final notification = await db.query(notificationTable);
-      devtools.log("Inside get all notes after db query ");
-      devtools.log('Inside get all notes return tf is this log: ${notes.toString()}');
-      devtools.log('Inside the get all notification: ${notification.toString()}');
       return notes.map((noteRow) => DatabaseNote.fromRow(noteRow)); //la focntion map prend chacun des row et renvoie le row sous forme de Datbase Row
     } catch (e){
       devtools.log("An error occured in getAllNotes function: $e");
@@ -474,9 +452,6 @@ class LocalNotesService {
     try{
       await _ensureDbIsOpen();
       final db = _getDatabaseOrThrow();
-      devtools.log("Update local note function, id : ${note.cloudNoteId}");
-      devtools.log("Update local note function, text of the note: $text");
-      devtools.log("Update local note function, date of the note $date");
       //final noteTableState = await getAllNotes();
       //devtools.log("Update local note function, current note table: ${noteTableState.toString()}");
       final noteToUpdate = await getNote(id: note.cloudNoteId); // will throw an error if the note does not exist, we do not need a return value
@@ -495,13 +470,11 @@ class LocalNotesService {
         throw CouldNotUpdateNote();
       } else {
         final updatedNote = await getNote(id: note.cloudNoteId); //we have updated the table with the new note, now we retrieve it.
-        devtools.log("Update local note function, This is the updated note: ${updatedNote.toString()}");
         //update the cache
         _notes.removeWhere((note) => note.cloudNoteId == updatedNote.cloudNoteId);
         _notes.add(updatedNote);
         _notesStreamController.add(_notes);
         final allNotesShow = await getAllNotes();
-        devtools.log("Update note function, state of the database after update: ${allNotesShow.toString()}");
         return updatedNote;
       }
     } catch(e){
